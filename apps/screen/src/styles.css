@@ -32,6 +32,11 @@ body {
   color: var(--white);
 }
 
+body.cursor-hidden,
+body.cursor-hidden * {
+  cursor: none !important;
+}
+
 button,
 input {
   font: inherit;

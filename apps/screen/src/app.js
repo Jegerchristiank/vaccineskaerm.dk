@@ -3,6 +3,9 @@ const CAMPAIGN_FIRST_DELAY_MS = 60 * 1000;
 const CAMPAIGN_INTERVAL_MS = 8 * 60 * 1000;
 const CAMPAIGN_DURATION_MS = 45 * 1000;
 const SETTINGS_VISIBLE_MS = 6500;
+const SETTINGS_IDLE_CHECK_MS = 500;
+const SETTINGS_REOPEN_GRACE_MS = 2500;
+const CURSOR_IDLE_MS = 3500;
 
 const stations = {
   p4: {
@@ -38,6 +41,9 @@ let selectedStation = localStorage.getItem("selectedStation") || "";
 let campaignTimer = null;
 let campaignHideTimer = null;
 let settingsTimer = null;
+let settingsLastInteraction = 0;
+let settingsClosedUntil = 0;
+let cursorTimer = null;
 
 function updateClock() {
   const now = new Date();
@@ -92,17 +98,33 @@ function syncCampaignToggle() {
   localStorage.setItem("campaignEnabled", String(campaignEnabled));
 }
 
-function revealSettings() {
-  document.body.classList.add("settings-visible");
-  clearTimeout(settingsTimer);
-  settingsTimer = setTimeout(() => {
-    document.body.classList.remove("settings-visible");
-  }, SETTINGS_VISIBLE_MS);
+function showCursorTemporarily() {
+  document.body.classList.remove("cursor-hidden");
+  clearTimeout(cursorTimer);
+  cursorTimer = setTimeout(() => {
+    document.body.classList.add("cursor-hidden");
+  }, CURSOR_IDLE_MS);
 }
 
-function hideSettingsPanel() {
+function revealSettings() {
+  showCursorTemporarily();
+
+  if (Date.now() < settingsClosedUntil) return;
+
+  settingsLastInteraction = Date.now();
+  document.body.classList.add("settings-visible");
+  clearTimeout(settingsTimer);
+  settingsTimer = setTimeout(hideSettingsPanel, SETTINGS_VISIBLE_MS);
+}
+
+function hideSettingsPanel({ pauseBeforeReopen = false } = {}) {
   document.body.classList.remove("settings-visible");
   clearTimeout(settingsTimer);
+  settingsLastInteraction = 0;
+
+  if (pauseBeforeReopen) {
+    settingsClosedUntil = Date.now() + SETTINGS_REOPEN_GRACE_MS;
+  }
 }
 
 function setActiveStation(stationKey) {
@@ -189,15 +211,28 @@ campaignToggle.addEventListener("change", () => {
   revealSettings();
 });
 
-hideSettings.addEventListener("click", hideSettingsPanel);
+hideSettings.addEventListener("click", () => {
+  hideSettingsPanel({ pauseBeforeReopen: true });
+});
 
 ["pointermove", "pointerdown", "touchstart"].forEach((eventName) => {
   window.addEventListener(eventName, revealSettings, { passive: true });
 });
 
+setInterval(() => {
+  if (!settingsLastInteraction || !document.body.classList.contains("settings-visible")) return;
+
+  if (Date.now() - settingsLastInteraction >= SETTINGS_VISIBLE_MS) {
+    hideSettingsPanel();
+  }
+}, SETTINGS_IDLE_CHECK_MS);
+
 document.addEventListener("visibilitychange", () => {
   if (!document.hidden) {
     updateClock();
     scheduleCampaign();
+    showCursorTemporarily();
   }
 });
+
+showCursorTemporarily();
