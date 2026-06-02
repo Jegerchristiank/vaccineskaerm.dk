@@ -426,7 +426,7 @@ button {
   display: flex;
   min-width: 0;
   align-items: center;
-  flex: 1 1 168px;
+  flex: 1 1 184px;
   gap: 10px;
   padding: 6px 4px;
   text-align: left;
@@ -471,9 +471,9 @@ button {
 
 .station-logo {
   display: block;
-  width: 88px;
+  width: 114px;
   height: 46px;
-  flex: 0 0 88px;
+  flex: 0 0 114px;
   overflow: hidden;
   border-radius: 6px;
   box-shadow: 0 10px 22px rgba(0, 12, 26, 0.2);
@@ -487,8 +487,8 @@ button {
 }
 
 .station-logo-voice {
-  width: 108px;
-  flex-basis: 108px;
+  width: 128px;
+  flex-basis: 128px;
   background: #000;
 }
 
@@ -682,14 +682,14 @@ button {
   }
 
   .station-button {
-    flex: 0 1 152px;
+    flex: 0 1 166px;
     gap: 8px;
   }
 
   .station-logo {
-    width: 72px;
+    width: 102px;
     height: 38px;
-    flex-basis: 72px;
+    flex-basis: 102px;
   }
 
   .station-logo-square {
@@ -699,8 +699,8 @@ button {
   }
 
   .station-logo-voice {
-    width: 88px;
-    flex-basis: 88px;
+    width: 110px;
+    flex-basis: 110px;
   }
 
   .station-copy strong {
