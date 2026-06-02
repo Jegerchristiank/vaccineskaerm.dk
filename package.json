@@ -1,0 +1,13 @@
+{
+  "name": "vaccineskaerm-monorepo",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "build": "node apps/screen/scripts/build.mjs",
+    "dev": "node apps/screen/scripts/serve.mjs",
+    "preview": "node apps/screen/scripts/serve.mjs --dist"
+  }
+}
