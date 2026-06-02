@@ -674,19 +674,60 @@ button {
   }
 
   .settings-panel {
-    grid-template-columns: auto minmax(360px, 1fr) minmax(210px, 0.36fr) minmax(250px, 0.3fr) 52px;
-    gap: 20px;
-    padding: 18px 52px;
+    grid-template-areas:
+      "title radio close"
+      "title timer campaign";
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 10px 20px;
+    padding: 14px 40px;
   }
 
   .settings-title {
+    grid-area: title;
     min-width: 250px;
   }
 
+  .settings-panel > .settings-group:not(.timer-settings):not(.compact) {
+    grid-area: radio;
+  }
+
+  .timer-settings {
+    grid-area: timer;
+  }
+
   .settings-group.compact {
+    grid-area: campaign;
     min-width: 250px;
     gap: 18px;
-    padding-left: 24px;
+    padding-left: 0;
+    border-left: 0;
+  }
+
+  .close-button {
+    grid-area: close;
+  }
+
+  .station-list {
+    gap: 10px;
+  }
+
+  .station-button {
+    flex: 0 1 132px;
+    gap: 8px;
+  }
+
+  .station-logo {
+    width: 46px;
+    height: 46px;
+    flex-basis: 46px;
+  }
+
+  .station-copy strong {
+    font-size: 1rem;
+  }
+
+  .station-copy small {
+    font-size: 0.72rem;
   }
 }
 
