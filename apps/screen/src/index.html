@@ -10,79 +10,28 @@
   <body>
     <main class="screen-shell" aria-live="polite">
       <section class="ambient-screen" data-screen="ambient">
-        <header class="region-mark" aria-label="Region Sjælland">
-          <img src="/assets/region-sjaelland-logo-negative.gif" alt="Region Sjælland - vi er til for dig" />
-        </header>
+        <img class="ambient-background" src="/assets/waiting-room-background.png" alt="" aria-hidden="true" />
 
-        <div class="ambient-layout">
-          <div class="waiting-side">
-            <section class="time-block" aria-label="Tid">
-              <time id="clock" class="clock" datetime="">00:00:00</time>
-              <p id="dateLine" class="date-line">Tirsdag 2. juni 2026</p>
-              <div class="yellow-mark"></div>
-              <h1>Tak, fordi du passer på dig selv og andre <span aria-hidden="true">♡</span></h1>
-            </section>
+        <section class="time-overlay" aria-label="Tid og dato">
+          <time id="clock" class="clock" datetime="">00:00:00</time>
+          <p id="dateLine" class="date-line">Tirsdag 2. juni 2026</p>
+        </section>
 
-            <section class="symbol-field" aria-hidden="true">
-              <svg class="illustration-map" viewBox="0 0 620 430" role="img">
-                <title>Rejse fra booking til ventetid og vaccination</title>
-                <path class="journey-route-shadow" d="M202 258 C207 255 214 251 220 248"></path>
-                <path class="journey-route-shadow" d="M407 176 C410 174 414 171 418 169"></path>
-                <path class="journey-route" d="M202 258 C207 255 214 251 220 248"></path>
-                <path class="journey-route" d="M407 176 C410 174 414 171 418 169"></path>
-
-                <g class="journey-step journey-booking" transform="translate(54 244)">
-                  <circle class="journey-step-ring" cx="62" cy="62" r="58"></circle>
-                  <rect x="25" y="38" width="74" height="58" rx="9"></rect>
-                  <path d="M25 55h74M41 24v25M83 24v25M43 72h11M67 72h11"></path>
-                  <circle class="journey-check" cx="94" cy="94" r="22"></circle>
-                  <path class="journey-check-mark" d="m83 94 8 8 18-22"></path>
-                </g>
-
-                <g class="journey-step journey-waiting" transform="translate(248 158)">
-                  <circle class="journey-step-ring" cx="66" cy="66" r="62"></circle>
-                  <path d="M30 83h72M43 83V55c0-13 10-23 23-23s23 10 23 23v28M36 102h60M44 83v19M88 83v19"></path>
-                  <circle cx="101" cy="36" r="25"></circle>
-                  <path d="M101 21v17l12 10"></path>
-                </g>
-
-                <g class="journey-step journey-vaccine" transform="translate(438 54) rotate(-12)">
-                  <circle class="journey-step-ring" cx="70" cy="70" r="62"></circle>
-                  <path d="M126 70h34"></path>
-                  <path d="M22 70h28"></path>
-                  <path d="M4 70h22M4 48v44"></path>
-                  <rect x="50" y="42" width="70" height="56" rx="8"></rect>
-                  <path d="M50 56H30v28h20M120 56h22v28h-22"></path>
-                  <path class="journey-fill" d="M76 72h24v20H76Z"></path>
-                  <path d="M66 48v18M85 48v18M104 48v18"></path>
-                </g>
-              </svg>
-            </section>
+        <section class="observation-widget" aria-label="Ventetimer">
+          <p class="observation-label">Ventetid efter vaccination</p>
+          <time id="observationTimer" class="observation-time" datetime="PT15M">15:00</time>
+          <p id="observationEnd" class="observation-end">Klar til 15 minutters observation</p>
+          <div class="observation-progress" aria-hidden="true">
+            <span id="observationProgress"></span>
           </div>
+        </section>
 
-          <section class="booking-panel" aria-label="Bestil vacciner">
-            <div class="campaign-heading">
-              <svg viewBox="0 0 40 40" aria-hidden="true">
-                <path d="M6 24v-8l19-7v22L6 24Z"></path>
-                <path d="M25 15h4a5 5 0 0 1 0 10h-4M10 24l3 9h5l-4-8"></path>
-              </svg>
-              <span>Vaccination - vi er til for dig</span>
-            </div>
-            <div class="panel-rule"></div>
-            <div class="booking-copy">
-              <span class="chevron" aria-hidden="true"></span>
-              <h2>Bestil dine vacciner på <strong>vacciner.dk</strong></h2>
-              <p>Her kan du få influenza-vaccinen, pneumokok-vaccinen og covid-vaccinen.</p>
-            </div>
-          </section>
-        </div>
-
-        <footer class="ambient-footer">
-          <div class="footer-note">
-            <span class="info-icon">i</span>
-            <span>Spørg personalet, hvis du er i tvivl eller føler dig utilpas.</span>
-          </div>
-        </footer>
+        <section class="info-carousel" aria-live="polite" aria-label="Venteinformation">
+          <p id="carouselKicker" class="carousel-kicker">Mens du venter</p>
+          <h1 id="carouselTitle">Hold øje med kroppen</h1>
+          <p id="carouselText">Sig til personalet, hvis du bliver utilpas, får åndenød, udslæt eller føler dig svimmel.</p>
+          <p id="carouselExtra" class="carousel-extra">Vi hjælper dig gerne.</p>
+        </section>
       </section>
 
       <section class="campaign-screen" data-screen="campaign" aria-hidden="true">
@@ -152,6 +101,15 @@
           </label>
         </div>
         <p id="radioStatus" class="status-text">Radio er slukket</p>
+      </div>
+
+      <div class="settings-group timer-settings">
+        <p class="settings-label">Ventetimer</p>
+        <div class="timer-actions">
+          <button id="startObservation" type="button" class="ghost-button">Start 15 min</button>
+          <button id="resetObservation" type="button" class="ghost-button">Nulstil</button>
+        </div>
+        <p id="observationStatus" class="status-text">Timeren er klar</p>
       </div>
 
       <div class="settings-group compact">

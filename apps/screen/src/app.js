@@ -7,6 +7,35 @@ const SETTINGS_IDLE_CHECK_MS = 500;
 const SETTINGS_REOPEN_GRACE_MS = 4200;
 const CURSOR_IDLE_MS = 3200;
 const CURSOR_CLOSE_HIDE_MS = 2200;
+const OBSERVATION_DURATION_MS = 15 * 60 * 1000;
+const CAROUSEL_INTERVAL_MS = 12 * 1000;
+
+const carouselSlides = [
+  {
+    kicker: "Mens du venter",
+    title: "Hold øje med kroppen",
+    text: "Sig til personalet, hvis du bliver utilpas, får åndenød, udslæt eller føler dig svimmel.",
+    extra: "Vi hjælper dig gerne."
+  },
+  {
+    kicker: "15 minutter",
+    title: "Bliv siddende lidt endnu",
+    text: "Ventetiden giver personalet mulighed for at reagere hurtigt, hvis kroppen reagerer på vaccinen.",
+    extra: "Når timeren rammer 00:00, er ventetiden gået."
+  },
+  {
+    kicker: "Gåde",
+    title: "Hvad kan du holde uden at røre ved det?",
+    text: "Tænk over den, mens du venter.",
+    extra: "Svar: Et løfte."
+  },
+  {
+    kicker: "Godt at vide",
+    title: "Vaccinen træner immunforsvaret",
+    text: "Efter vaccination arbejder kroppen videre med at opbygge beskyttelse.",
+    extra: "Spørg personalet, hvis du er i tvivl."
+  }
+];
 
 const stations = {
   p4: {
@@ -32,6 +61,16 @@ const volumeControl = document.querySelector("#volumeControl");
 const stationButtons = [...document.querySelectorAll(".station-button")];
 const stopRadio = document.querySelector("#stopRadio");
 const hideSettings = document.querySelector("#hideSettings");
+const observationTimer = document.querySelector("#observationTimer");
+const observationEnd = document.querySelector("#observationEnd");
+const observationProgress = document.querySelector("#observationProgress");
+const observationStatus = document.querySelector("#observationStatus");
+const startObservation = document.querySelector("#startObservation");
+const resetObservation = document.querySelector("#resetObservation");
+const carouselKicker = document.querySelector("#carouselKicker");
+const carouselTitle = document.querySelector("#carouselTitle");
+const carouselText = document.querySelector("#carouselText");
+const carouselExtra = document.querySelector("#carouselExtra");
 
 const audio = new Audio();
 audio.preload = "none";
@@ -45,6 +84,8 @@ let settingsTimer = null;
 let settingsLastInteraction = 0;
 let settingsClosedUntil = 0;
 let cursorTimer = null;
+let observationEndAt = Number(localStorage.getItem("observationEndAt") || "0");
+let carouselIndex = 0;
 
 function updateClock() {
   const now = new Date();
@@ -67,6 +108,66 @@ function updateClock() {
   clock.dateTime = now.toISOString();
   const formattedDate = dateFormatter.format(now).replace(" den ", " ");
   dateLine.textContent = formattedDate.charAt(0).toUpperCase() + formattedDate.slice(1);
+}
+
+function formatDuration(ms) {
+  const totalSeconds = Math.max(0, Math.ceil(ms / 1000));
+  const minutes = String(Math.floor(totalSeconds / 60)).padStart(2, "0");
+  const seconds = String(totalSeconds % 60).padStart(2, "0");
+  return `${minutes}:${seconds}`;
+}
+
+function formatEndTime(timestamp) {
+  return new Intl.DateTimeFormat("da-DK", {
+    timeZone: DENMARK_TIME_ZONE,
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false
+  }).format(new Date(timestamp)).replace(/\./g, ":");
+}
+
+function updateObservationTimer() {
+  if (!observationEndAt) {
+    observationTimer.textContent = "15:00";
+    observationTimer.dateTime = "PT15M";
+    observationEnd.textContent = "Klar til 15 minutters observation";
+    observationStatus.textContent = "Timeren er klar";
+    observationProgress.style.width = "0%";
+    document.body.classList.remove("observation-running", "observation-complete");
+    return;
+  }
+
+  const remaining = observationEndAt - Date.now();
+  const remainingClamped = Math.max(0, remaining);
+  const progress = Math.min(100, ((OBSERVATION_DURATION_MS - remainingClamped) / OBSERVATION_DURATION_MS) * 100);
+
+  observationTimer.textContent = formatDuration(remainingClamped);
+  observationTimer.dateTime = `PT${Math.ceil(remainingClamped / 1000)}S`;
+  observationEnd.textContent = remaining > 0 ? `Færdig kl. ${formatEndTime(observationEndAt)}` : "15 minutters observation er gået";
+  observationStatus.textContent = remaining > 0 ? `Færdig kl. ${formatEndTime(observationEndAt)}` : "Ventetiden er gået";
+  observationProgress.style.width = `${progress}%`;
+  document.body.classList.toggle("observation-running", remaining > 0);
+  document.body.classList.toggle("observation-complete", remaining <= 0);
+}
+
+function startObservationTimer() {
+  observationEndAt = Date.now() + OBSERVATION_DURATION_MS;
+  localStorage.setItem("observationEndAt", String(observationEndAt));
+  updateObservationTimer();
+}
+
+function resetObservationTimer() {
+  observationEndAt = 0;
+  localStorage.removeItem("observationEndAt");
+  updateObservationTimer();
+}
+
+function renderCarouselSlide() {
+  const slide = carouselSlides[carouselIndex % carouselSlides.length];
+  carouselKicker.textContent = slide.kicker;
+  carouselTitle.textContent = slide.title;
+  carouselText.textContent = slide.text;
+  carouselExtra.textContent = slide.extra;
 }
 
 function setCampaignVisible(visible) {
@@ -184,8 +285,13 @@ function stopRadioPlayback() {
   });
 }
 
-setInterval(updateClock, 250);
+setInterval(() => {
+  updateClock();
+  updateObservationTimer();
+}, 250);
 updateClock();
+updateObservationTimer();
+renderCarouselSlide();
 
 syncCampaignToggle();
 scheduleCampaign();
@@ -225,6 +331,16 @@ hideSettings.addEventListener("click", () => {
   hideSettingsPanel({ pauseBeforeReopen: true, hideCursorSoon: true });
 });
 
+startObservation.addEventListener("click", () => {
+  revealSettings();
+  startObservationTimer();
+});
+
+resetObservation.addEventListener("click", () => {
+  revealSettings();
+  resetObservationTimer();
+});
+
 ["pointermove", "pointerdown", "touchstart"].forEach((eventName) => {
   window.addEventListener(eventName, revealSettings, { passive: true });
 });
@@ -236,6 +352,11 @@ setInterval(() => {
     hideSettingsPanel();
   }
 }, SETTINGS_IDLE_CHECK_MS);
+
+setInterval(() => {
+  carouselIndex = (carouselIndex + 1) % carouselSlides.length;
+  renderCarouselSlide();
+}, CAROUSEL_INTERVAL_MS);
 
 document.addEventListener("visibilitychange", () => {
   if (!document.hidden) {
