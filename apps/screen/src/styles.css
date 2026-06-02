@@ -183,49 +183,67 @@ button {
   height: 100%;
   overflow: visible;
   fill: none;
+  transform: scale(1.14);
+  transform-origin: 50% 50%;
 }
 
-.route {
-  stroke: rgba(141, 220, 231, 0.42);
-  stroke-width: 4;
-  stroke-dasharray: 16 18;
+.journey-route-shadow {
+  stroke: rgba(0, 22, 45, 0.3);
+  stroke-width: 22;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 
-.map-icon {
+.journey-route {
+  stroke: rgba(184, 238, 244, 0.74);
+  stroke-width: 6;
+  stroke-dasharray: 17 18;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.journey-step {
   fill: none;
-  stroke: rgba(224, 251, 255, 0.88);
-  stroke-width: 4;
+  stroke: rgba(224, 251, 255, 0.96);
+  stroke-width: 5;
   stroke-linecap: round;
   stroke-linejoin: round;
-  filter: drop-shadow(0 12px 20px rgba(0, 24, 49, 0.2));
+  filter: drop-shadow(0 14px 22px rgba(0, 24, 49, 0.24));
 }
 
-.calendar-icon,
-.clock-icon,
-.id-icon,
-.question-icon {
-  opacity: 0.9;
+.journey-step-ring {
+  fill: rgba(0, 38, 72, 0.32);
+  stroke: rgba(141, 220, 231, 0.62);
+  stroke-width: 4;
 }
 
-.syringe-icon {
-  stroke: rgba(255, 255, 255, 0.92);
-}
-
-.vaccine-fill {
+.journey-check,
+.journey-fill {
   fill: rgba(141, 220, 231, 0.72);
   stroke: rgba(141, 220, 231, 0.72);
 }
 
-.route-mark {
-  stroke: rgba(141, 220, 231, 0.7);
+.journey-check-mark {
+  stroke: #fff;
+}
+
+.journey-vaccine {
+  stroke: rgba(255, 255, 255, 0.94);
+}
+
+.journey-dot {
+  fill: var(--cyan-300);
+  filter: drop-shadow(0 8px 14px rgba(0, 24, 49, 0.3));
+}
+
+.journey-plus {
+  stroke: rgba(141, 220, 231, 0.72);
   stroke-width: 4;
   stroke-linecap: round;
 }
 
-.route-dot {
-  fill: rgba(141, 220, 231, 0.72);
+.journey-plus-small {
+  opacity: 0.7;
 }
 
 .booking-panel {
@@ -455,8 +473,8 @@ button {
   left: 0;
   z-index: 20;
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) minmax(260px, 0.3fr) auto;
-  gap: min(3.4vw, 52px);
+  grid-template-columns: auto minmax(0, 1fr) minmax(230px, 0.28fr) auto;
+  gap: min(2.6vw, 38px);
   align-items: center;
   padding: 22px min(4.8vw, 78px);
   border-top: 1px solid rgba(141, 220, 231, 0.28);
@@ -533,7 +551,7 @@ button {
 
 .station-list {
   display: flex;
-  gap: min(1.6vw, 26px);
+  gap: min(1.1vw, 18px);
   align-items: center;
 }
 
@@ -548,29 +566,36 @@ button {
 
 .station-button {
   display: flex;
-  min-width: 142px;
+  min-width: 0;
   align-items: center;
-  gap: 13px;
-  padding: 7px 4px;
+  flex: 1 1 154px;
+  gap: 10px;
+  padding: 6px 4px;
   text-align: left;
 }
 
-.station-button strong {
+.station-copy {
+  min-width: 0;
+}
+
+.station-copy strong {
   display: block;
   color: rgba(255, 255, 255, 0.96);
-  font-size: 1.38rem;
+  font-size: clamp(1.02rem, 1.2vw, 1.22rem);
   font-weight: 820;
   letter-spacing: 0;
   line-height: 1;
+  white-space: nowrap;
 }
 
-.station-button small {
+.station-copy small {
   display: block;
   margin-top: 5px;
   color: rgba(255, 255, 255, 0.68);
-  font-size: 0.82rem;
+  font-size: 0.78rem;
   font-weight: 650;
   letter-spacing: 0;
+  white-space: nowrap;
 }
 
 .station-button:hover,
@@ -586,21 +611,27 @@ button {
   color: var(--cyan-200);
 }
 
-.station-button.was-selected:not(.is-active) .station-dot {
-  border-color: var(--cyan-200);
+.station-logo {
+  display: block;
+  width: 52px;
+  height: 52px;
+  flex: 0 0 52px;
+  overflow: hidden;
+  border-radius: 8px;
+  box-shadow: 0 10px 22px rgba(0, 12, 26, 0.2);
+  object-fit: contain;
 }
 
-.station-dot {
-  width: 22px;
-  height: 22px;
-  flex: 0 0 auto;
-  border: 3px solid rgba(255, 255, 255, 0.84);
-  border-radius: 50%;
+.station-button.was-selected:not(.is-active) .station-logo {
+  outline: 2px solid rgba(184, 238, 244, 0.72);
+  outline-offset: 3px;
 }
 
-.station-button.is-active .station-dot {
+.station-button.is-active .station-logo {
   border-color: #fff;
-  background: radial-gradient(circle, #fff 0 33%, var(--cyan-300) 38% 100%);
+  box-shadow:
+    0 0 0 3px rgba(184, 238, 244, 0.9),
+    0 12px 26px rgba(0, 12, 26, 0.28);
 }
 
 .radio-actions {

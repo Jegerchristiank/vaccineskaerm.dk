@@ -25,49 +25,43 @@
 
             <section class="symbol-field" aria-hidden="true">
               <svg class="illustration-map" viewBox="0 0 620 430" role="img">
-                <path class="route route-a" d="M86 325 C164 350 214 306 231 241 C251 166 312 160 350 196 C402 245 484 226 489 151 C493 84 438 65 391 84"></path>
-                <path class="route route-b" d="M301 344 C372 312 389 384 449 360 C488 344 462 291 500 269"></path>
+                <title>Rejse fra booking til ventetid og vaccination</title>
+                <path class="journey-route-shadow" d="M88 300 C142 236 205 218 266 240 C334 264 358 154 428 166 C492 177 509 114 548 86"></path>
+                <path class="journey-route" d="M88 300 C142 236 205 218 266 240 C334 264 358 154 428 166 C492 177 509 114 548 86"></path>
 
-                <g class="map-icon calendar-icon" transform="translate(344 32)">
-                  <rect x="0" y="18" width="94" height="74" rx="10"></rect>
-                  <path d="M0 36h94M22 0v28M72 0v28M24 54h14M48 54h14M24 72h14M48 72h14"></path>
-                  <circle cx="92" cy="84" r="24"></circle>
-                  <path d="m80 84 9 9 17-20"></path>
+                <g class="journey-step journey-booking" transform="translate(54 244)">
+                  <circle class="journey-step-ring" cx="62" cy="62" r="58"></circle>
+                  <rect x="25" y="38" width="74" height="58" rx="9"></rect>
+                  <path d="M25 55h74M41 24v25M83 24v25M43 72h11M67 72h11"></path>
+                  <circle class="journey-check" cx="94" cy="94" r="22"></circle>
+                  <path class="journey-check-mark" d="m83 94 8 8 18-22"></path>
                 </g>
 
-                <g class="map-icon clock-icon" transform="translate(478 162)">
-                  <circle cx="50" cy="50" r="47"></circle>
-                  <path d="M50 18v35l27 22"></path>
+                <g class="journey-step journey-waiting" transform="translate(248 158)">
+                  <circle class="journey-step-ring" cx="66" cy="66" r="62"></circle>
+                  <path d="M30 83h72M43 83V55c0-13 10-23 23-23s23 10 23 23v28M36 102h60M44 83v19M88 83v19"></path>
+                  <circle cx="101" cy="36" r="25"></circle>
+                  <path d="M101 21v17l12 10"></path>
                 </g>
 
-                <g class="map-icon syringe-icon" transform="translate(320 246) rotate(-45) translate(-92 -22)">
-                  <path d="M142 22h54"></path>
-                  <path d="M28 22h22"></path>
-                  <path d="M4 22h24M4 4v36"></path>
-                  <rect x="50" y="-10" width="76" height="64" rx="7"></rect>
-                  <path d="M50 6H30v32h20M126 6h18v32h-18"></path>
-                  <path class="vaccine-fill" d="M60 30h56v16H60Z"></path>
-                  <path d="M70 -2v18M88 -2v18M106 -2v18"></path>
+                <g class="journey-step journey-vaccine" transform="translate(438 54) rotate(-12)">
+                  <circle class="journey-step-ring" cx="70" cy="70" r="62"></circle>
+                  <path d="M126 70h34"></path>
+                  <path d="M22 70h28"></path>
+                  <path d="M4 70h22M4 48v44"></path>
+                  <rect x="50" y="42" width="70" height="56" rx="8"></rect>
+                  <path d="M50 56H30v28h20M120 56h22v28h-22"></path>
+                  <path class="journey-fill" d="M61 76h48v13H61Z"></path>
+                  <path d="M66 48v18M85 48v18M104 48v18"></path>
                 </g>
 
-                <g class="map-icon question-icon" transform="translate(38 282)">
-                  <path d="M8 45C8 20 31 4 61 4s54 17 54 43c0 28-24 47-59 47H34L8 113l8-29C9 73 8 61 8 45Z"></path>
-                  <path d="M47 37c3-13 27-14 32-1 9 21-22 22-22 43M57 92h.1"></path>
+                <circle class="journey-dot journey-dot-one" cx="186" cy="246" r="6"></circle>
+                <circle class="journey-dot journey-dot-two" cx="382" cy="173" r="6"></circle>
+                <g class="journey-plus" transform="translate(515 268)">
+                  <path d="M0 15h30M15 0v30"></path>
                 </g>
-
-                <g class="map-icon id-icon" transform="translate(228 318)">
-                  <rect x="0" y="0" width="126" height="82" rx="12"></rect>
-                  <circle cx="34" cy="32" r="15"></circle>
-                  <path d="M14 70c5-25 35-25 40 0M72 25h34M72 43h34M72 61h22"></path>
-                </g>
-
-                <g class="route-mark route-mark-one" transform="translate(258 98)">
-                  <path d="M0 14h28M14 0v28"></path>
-                </g>
-                <circle class="route-dot route-dot-one" cx="286" cy="186" r="6"></circle>
-                <circle class="route-dot route-dot-two" cx="558" cy="90" r="5"></circle>
-                <g class="route-mark route-mark-two" transform="translate(518 326)">
-                  <path d="M0 14h28M14 0v28"></path>
+                <g class="journey-plus journey-plus-small" transform="translate(214 112)">
+                  <path d="M0 10h20M10 0v20"></path>
                 </g>
               </svg>
             </section>
@@ -145,16 +139,16 @@
         <p class="settings-label">Radiokanal</p>
         <div class="station-list" role="group" aria-label="Radiokanal">
           <button class="station-button" type="button" data-station="p4">
-            <span class="station-dot"></span>
-            <span><strong>DR P4</strong><small>Sjælland</small></span>
+            <img class="station-logo" src="/assets/dr-p4.svg" alt="" aria-hidden="true" />
+            <span class="station-copy"><strong>DR P4</strong><small>Sjælland</small></span>
           </button>
           <button class="station-button" type="button" data-station="p5">
-            <span class="station-dot"></span>
-            <span><strong>DR P5</strong><small>Rolig musik</small></span>
+            <img class="station-logo" src="/assets/dr-p5.svg" alt="" aria-hidden="true" />
+            <span class="station-copy"><strong>DR P5</strong><small>Rolig musik</small></span>
           </button>
           <button class="station-button" type="button" data-station="p3">
-            <span class="station-dot"></span>
-            <span><strong>DR P3</strong><small>Live radio</small></span>
+            <img class="station-logo" src="/assets/dr-p3.svg" alt="" aria-hidden="true" />
+            <span class="station-copy"><strong>DR P3</strong><small>Live radio</small></span>
           </button>
         </div>
         <div class="radio-actions">
