@@ -11,16 +11,7 @@
     <main class="screen-shell" aria-live="polite">
       <section class="ambient-screen" data-screen="ambient">
         <header class="region-mark" aria-label="Region Sjælland">
-          <div class="region-name">
-            <span>Region</span>
-            <span>Sjælland</span>
-          </div>
-          <div class="region-symbol" aria-hidden="true">
-            <span></span><span></span><span></span><span></span>
-            <span></span><span></span><span></span><span></span>
-            <span></span><span></span><span></span>
-          </div>
-          <p>- vi er til for dig</p>
+          <img src="/assets/region-sjaelland-logo-negative.gif" alt="Region Sjælland - vi er til for dig" />
         </header>
 
         <div class="ambient-layout">
@@ -33,37 +24,51 @@
             </section>
 
             <section class="symbol-field" aria-hidden="true">
-              <svg class="path-line" viewBox="0 0 620 360" preserveAspectRatio="none">
-                <path d="M38 262c70 28 120-12 132-66 18-84 92-72 136-36 48 40 118 28 116-54-2-76-76-92-132-56"></path>
-                <path d="M320 250c70-16 78 72 132 56 38-10 18-56 42-74"></path>
-              </svg>
-              <span class="spark spark-one">+</span>
-              <span class="spark spark-two">•</span>
-              <span class="spark spark-three">+</span>
-              <span class="spark spark-four">•</span>
-              <svg class="icon icon-calendar" viewBox="0 0 96 96" role="img">
-                <rect x="18" y="22" width="54" height="48" rx="7"></rect>
-                <path d="M18 36h54M32 16v14M58 16v14M32 48h9M51 48h9M32 60h9M51 60h9"></path>
-                <circle cx="72" cy="67" r="14"></circle>
-                <path d="m65 67 5 5 10-12"></path>
-              </svg>
-              <svg class="icon icon-syringe" viewBox="0 0 120 120" role="img">
-                <path d="m82 16 22 22M74 24l22 22M25 96l57-57 14 14-57 57H25V96Z"></path>
-                <path d="M38 82 52 96M50 70l14 14M62 58l14 14M17 103l-8 8M88 30l16-16"></path>
-                <path class="fill-detail" d="m55 78 20-20 12 12-20 20Z"></path>
-              </svg>
-              <svg class="icon icon-clock" viewBox="0 0 96 96" role="img">
-                <circle cx="48" cy="48" r="34"></circle>
-                <path d="M48 25v24l17 13"></path>
-              </svg>
-              <svg class="icon icon-id" viewBox="0 0 96 96" role="img">
-                <rect x="16" y="24" width="64" height="48" rx="8"></rect>
-                <circle cx="34" cy="42" r="9"></circle>
-                <path d="M22 64c3-10 21-10 24 0M54 40h16M54 52h16M54 64h10"></path>
-              </svg>
-              <svg class="icon icon-question" viewBox="0 0 96 96" role="img">
-                <path d="M23 39c0-15 13-25 29-25s27 10 27 25c0 17-13 28-31 28H34L19 78l5-16c-5-6-1-15-1-23Z"></path>
-                <path d="M42 35c2-7 15-8 18-1 5 11-12 12-12 23M48 68h.1"></path>
+              <svg class="illustration-map" viewBox="0 0 620 430" role="img">
+                <path class="route route-a" d="M86 325 C164 350 214 306 231 241 C251 166 312 160 350 196 C402 245 484 226 489 151 C493 84 438 65 391 84"></path>
+                <path class="route route-b" d="M301 344 C372 312 389 384 449 360 C488 344 462 291 500 269"></path>
+
+                <g class="map-icon calendar-icon" transform="translate(344 32)">
+                  <rect x="0" y="18" width="94" height="74" rx="10"></rect>
+                  <path d="M0 36h94M22 0v28M72 0v28M24 54h14M48 54h14M24 72h14M48 72h14"></path>
+                  <circle cx="92" cy="84" r="24"></circle>
+                  <path d="m80 84 9 9 17-20"></path>
+                </g>
+
+                <g class="map-icon clock-icon" transform="translate(478 162)">
+                  <circle cx="50" cy="50" r="47"></circle>
+                  <path d="M50 18v35l27 22"></path>
+                </g>
+
+                <g class="map-icon syringe-icon" transform="translate(320 246) rotate(-45) translate(-92 -22)">
+                  <path d="M142 22h54"></path>
+                  <path d="M28 22h22"></path>
+                  <path d="M4 22h24M4 4v36"></path>
+                  <rect x="50" y="-10" width="76" height="64" rx="7"></rect>
+                  <path d="M50 6H30v32h20M126 6h18v32h-18"></path>
+                  <path class="vaccine-fill" d="M60 30h56v16H60Z"></path>
+                  <path d="M70 -2v18M88 -2v18M106 -2v18"></path>
+                </g>
+
+                <g class="map-icon question-icon" transform="translate(38 282)">
+                  <path d="M8 45C8 20 31 4 61 4s54 17 54 43c0 28-24 47-59 47H34L8 113l8-29C9 73 8 61 8 45Z"></path>
+                  <path d="M47 37c3-13 27-14 32-1 9 21-22 22-22 43M57 92h.1"></path>
+                </g>
+
+                <g class="map-icon id-icon" transform="translate(228 318)">
+                  <rect x="0" y="0" width="126" height="82" rx="12"></rect>
+                  <circle cx="34" cy="32" r="15"></circle>
+                  <path d="M14 70c5-25 35-25 40 0M72 25h34M72 43h34M72 61h22"></path>
+                </g>
+
+                <g class="route-mark route-mark-one" transform="translate(258 98)">
+                  <path d="M0 14h28M14 0v28"></path>
+                </g>
+                <circle class="route-dot route-dot-one" cx="286" cy="186" r="6"></circle>
+                <circle class="route-dot route-dot-two" cx="558" cy="90" r="5"></circle>
+                <g class="route-mark route-mark-two" transform="translate(518 326)">
+                  <path d="M0 14h28M14 0v28"></path>
+                </g>
               </svg>
             </section>
           </div>
@@ -74,7 +79,7 @@
                 <path d="M6 24v-8l19-7v22L6 24Z"></path>
                 <path d="M25 15h4a5 5 0 0 1 0 10h-4M10 24l3 9h5l-4-8"></path>
               </svg>
-              <span>Vaccination - godt for dig</span>
+              <span>Vaccination - vi er til for dig</span>
             </div>
             <div class="panel-rule"></div>
             <div class="booking-copy">
@@ -101,10 +106,14 @@
             <circle cx="72" cy="67" r="14"></circle>
             <path d="m65 67 5 5 10-12"></path>
           </svg>
-          <svg class="icon icon-syringe" viewBox="0 0 120 120">
-            <path d="m82 16 22 22M74 24l22 22M25 96l57-57 14 14-57 57H25V96Z"></path>
-            <path d="M38 82 52 96M50 70l14 14M62 58l14 14M17 103l-8 8M88 30l16-16"></path>
-            <path class="fill-detail" d="m55 78 20-20 12 12-20 20Z"></path>
+          <svg class="icon icon-syringe" viewBox="0 0 220 88">
+            <path d="M160 44h52"></path>
+            <path d="M28 44h28"></path>
+            <path d="M4 44h24M4 20v48"></path>
+            <rect x="56" y="8" width="88" height="72" rx="8"></rect>
+            <path d="M56 24H34v40h22M144 24h24v40h-24"></path>
+            <path class="fill-detail" d="M70 52h60v18H70Z"></path>
+            <path d="M78 18v20M100 18v20M122 18v20"></path>
           </svg>
         </div>
         <div class="campaign-content">
@@ -113,7 +122,7 @@
               <path d="M6 24v-8l19-7v22L6 24Z"></path>
               <path d="M25 15h4a5 5 0 0 1 0 10h-4M10 24l3 9h5l-4-8"></path>
             </svg>
-            <span>Vaccination - godt for dig</span>
+            <span>Vaccination - vi er til for dig</span>
           </div>
           <div class="panel-rule"></div>
           <h2>Bestil dine vacciner på <span>vacciner.dk</span></h2>

@@ -87,119 +87,15 @@ button {
 .region-mark {
   position: relative;
   z-index: 2;
-  display: grid;
-  width: min(285px, 30vw);
-  min-height: 118px;
-  grid-template-columns: minmax(0, 1fr) 78px;
-  grid-template-rows: auto auto;
-  column-gap: 12px;
-  align-items: start;
-  color: #fff;
+  width: 236px;
+  height: 125px;
 }
 
-.region-name {
-  align-self: center;
-  padding-top: 6px;
-  text-transform: uppercase;
-}
-
-.region-name span {
+.region-mark img {
   display: block;
-  color: rgba(255, 255, 255, 0.96);
-  font-size: 1.36rem;
-  font-weight: 500;
-  letter-spacing: 0;
-  line-height: 1.26;
-}
-
-.region-symbol {
-  position: relative;
-  width: 74px;
-  height: 74px;
-}
-
-.region-symbol span {
-  position: absolute;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: #fff;
-}
-
-.region-symbol span:nth-child(1) {
-  top: 3px;
-  left: 19px;
-}
-
-.region-symbol span:nth-child(2) {
-  top: 0;
-  left: 38px;
-  width: 10px;
-  height: 10px;
-}
-
-.region-symbol span:nth-child(3) {
-  top: 8px;
-  left: 55px;
-  width: 9px;
-  height: 9px;
-}
-
-.region-symbol span:nth-child(4) {
-  top: 23px;
-  left: 62px;
-}
-
-.region-symbol span:nth-child(5) {
-  top: 42px;
-  left: 59px;
-}
-
-.region-symbol span:nth-child(6) {
-  top: 57px;
-  left: 47px;
-  width: 10px;
-  height: 10px;
-}
-
-.region-symbol span:nth-child(7) {
-  top: 62px;
-  left: 28px;
-  width: 10px;
-  height: 10px;
-}
-
-.region-symbol span:nth-child(8) {
-  top: 54px;
-  left: 12px;
-}
-
-.region-symbol span:nth-child(9) {
-  top: 38px;
-  left: 4px;
-}
-
-.region-symbol span:nth-child(10) {
-  top: 20px;
-  left: 8px;
-}
-
-.region-symbol span:nth-child(11) {
-  top: 28px;
-  left: 31px;
-  width: 20px;
-  height: 20px;
-}
-
-.region-mark p {
-  grid-column: 1 / -1;
-  margin: 5px 0 0 30px;
-  color: rgba(255, 255, 255, 0.9);
-  font-family: "Segoe Script", "Bradley Hand", "Snell Roundhand", cursive;
-  font-size: 1.32rem;
-  font-style: italic;
-  letter-spacing: 0;
-  line-height: 1;
+  width: 236px;
+  height: 125px;
+  object-fit: contain;
 }
 
 .ambient-layout {
@@ -276,98 +172,55 @@ button {
   align-self: center;
 }
 
-.path-line {
-  position: absolute;
-  inset: 18% 4% 12% 2%;
-  width: 94%;
-  height: 70%;
+.illustration-map {
+  display: block;
+  width: 100%;
+  height: 100%;
   overflow: visible;
+  fill: none;
 }
 
-.path-line path {
-  fill: none;
-  stroke: rgba(141, 220, 231, 0.38);
+.route {
+  stroke: rgba(141, 220, 231, 0.42);
   stroke-width: 4;
   stroke-dasharray: 16 18;
   stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
-.icon {
-  position: absolute;
-  overflow: visible;
+.map-icon {
   fill: none;
-  stroke: rgba(224, 251, 255, 0.86);
-  stroke-width: 3;
+  stroke: rgba(224, 251, 255, 0.88);
+  stroke-width: 4;
   stroke-linecap: round;
   stroke-linejoin: round;
-  filter: drop-shadow(0 12px 20px rgba(0, 24, 49, 0.22));
+  filter: drop-shadow(0 12px 20px rgba(0, 24, 49, 0.2));
 }
 
-.icon .fill-detail {
+.calendar-icon,
+.clock-icon,
+.id-icon,
+.question-icon {
+  opacity: 0.9;
+}
+
+.syringe-icon {
+  stroke: rgba(255, 255, 255, 0.92);
+}
+
+.vaccine-fill {
   fill: rgba(141, 220, 231, 0.72);
   stroke: rgba(141, 220, 231, 0.72);
 }
 
-.icon-calendar {
-  top: 0;
-  left: 38%;
-  width: clamp(112px, 15vh, 156px);
+.route-mark {
+  stroke: rgba(141, 220, 231, 0.7);
+  stroke-width: 4;
+  stroke-linecap: round;
 }
 
-.icon-syringe {
-  top: 33%;
-  left: 34%;
-  width: clamp(150px, 20vh, 214px);
-  transform: rotate(-2deg);
-}
-
-.icon-clock {
-  top: 27%;
-  right: 2%;
-  width: clamp(116px, 15vh, 158px);
-  opacity: 0.88;
-}
-
-.icon-id {
-  bottom: 1%;
-  left: 36%;
-  width: clamp(136px, 17vh, 190px);
-  opacity: 0.88;
-}
-
-.icon-question {
-  bottom: 7%;
-  left: 0;
-  width: clamp(108px, 14vh, 150px);
-  opacity: 0.82;
-}
-
-.spark {
-  position: absolute;
-  color: rgba(141, 220, 231, 0.72);
-  font-size: 2.1rem;
-  font-weight: 500;
-  line-height: 1;
-}
-
-.spark-one {
-  top: 18%;
-  left: 28%;
-}
-
-.spark-two {
-  top: 34%;
-  left: 45%;
-}
-
-.spark-three {
-  right: 20%;
-  bottom: 18%;
-}
-
-.spark-four {
-  top: 12%;
-  right: 3%;
+.route-dot {
+  fill: rgba(141, 220, 231, 0.72);
 }
 
 .booking-panel {
@@ -440,7 +293,7 @@ button {
 
 .chevron {
   position: absolute;
-  top: 0.62em;
+  top: 23px;
   left: 0;
   width: 38px;
   height: 38px;
@@ -528,6 +381,35 @@ button {
 .campaign-watermark .icon-syringe {
   top: 38%;
   left: 32%;
+}
+
+.icon {
+  position: absolute;
+  overflow: visible;
+  fill: none;
+  stroke: rgba(224, 251, 255, 0.86);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 12px 20px rgba(0, 24, 49, 0.22));
+}
+
+.icon .fill-detail {
+  fill: rgba(141, 220, 231, 0.72);
+  stroke: rgba(141, 220, 231, 0.72);
+}
+
+.icon-calendar {
+  top: 0;
+  left: 38%;
+  width: clamp(112px, 15vh, 156px);
+}
+
+.icon-syringe {
+  top: 33%;
+  left: 34%;
+  width: clamp(150px, 20vh, 214px);
+  transform: rotate(-2deg);
 }
 
 .campaign-content {
@@ -851,24 +733,12 @@ button {
 
   .region-mark {
     width: 236px;
-    min-height: 100px;
-    grid-template-columns: minmax(0, 1fr) 62px;
+    height: 125px;
   }
 
-  .region-name span {
-    font-size: 1.08rem;
-  }
-
-  .region-symbol {
-    width: 58px;
-    height: 58px;
-    transform: scale(0.78);
-    transform-origin: top left;
-  }
-
-  .region-mark p {
-    margin-left: 22px;
-    font-size: 1.04rem;
+  .region-mark img {
+    width: 236px;
+    height: 125px;
   }
 
   .ambient-layout {
