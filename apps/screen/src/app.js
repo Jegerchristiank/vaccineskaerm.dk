@@ -58,7 +58,7 @@ function updateClock() {
 
   clock.textContent = timeFormatter.format(now).replace(/\./g, ":");
   clock.dateTime = now.toISOString();
-  const formattedDate = dateFormatter.format(now);
+  const formattedDate = dateFormatter.format(now).replace(" den ", " ");
   dateLine.textContent = formattedDate.charAt(0).toUpperCase() + formattedDate.slice(1);
 }
 
