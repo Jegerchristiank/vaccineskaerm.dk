@@ -493,6 +493,15 @@ button {
   background: rgba(250, 193, 50, 0.1);
 }
 
+.campaign-answer-item.is-hidden-answer {
+  border-color: rgba(184, 238, 244, 0.34);
+  background: transparent;
+}
+
+.campaign-answer-item.is-hidden-answer span {
+  color: rgba(255, 255, 255, 0.7);
+}
+
 .campaign-screen[data-variant="answers"] {
   display: block;
   padding: 0;

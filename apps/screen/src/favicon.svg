@@ -1,22 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
   <defs>
-    <linearGradient id="bg" x1="8" x2="56" y1="6" y2="58" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#005b8f" />
-      <stop offset="1" stop-color="#003d73" />
+    <linearGradient id="screenBlue" x1="8" x2="56" y1="6" y2="58" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#00628f" />
+      <stop offset="1" stop-color="#002f5f" />
     </linearGradient>
   </defs>
-  <rect width="64" height="64" rx="14" fill="url(#bg)" />
-  <circle cx="47" cy="13" r="3.1" fill="#fff" opacity=".92" />
-  <circle cx="55" cy="21" r="2.5" fill="#fff" opacity=".84" />
-  <circle cx="52" cy="32" r="2" fill="#fff" opacity=".7" />
-  <g transform="translate(9 45) rotate(-45)" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M1 18h11" stroke-width="4" />
-    <path d="M12 10v16" stroke-width="4" />
-    <rect x="16" y="7" width="27" height="22" rx="4" stroke-width="4" />
-    <path d="M43 18h9" stroke-width="4" />
-    <path d="M52 18h10" stroke-width="3" />
-    <path d="M25 8v8M33 8v8" stroke-width="2.5" opacity=".8" />
-    <path d="M18 23h22v4H18Z" fill="#8ddce7" stroke="none" opacity=".86" />
-  </g>
-  <path d="m42 43 4 4 9-10" fill="none" stroke="#fac132" stroke-linecap="round" stroke-linejoin="round" stroke-width="4" />
+  <rect width="64" height="64" rx="15" fill="url(#screenBlue)" />
+  <circle cx="32" cy="32" r="21" fill="none" stroke="#b8eef4" stroke-width="4" />
+  <path d="M32 19v13l8 7" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="4" />
+  <text x="32" y="39" fill="#fff" font-family="Arial, Helvetica, sans-serif" font-size="19" font-weight="800" text-anchor="middle">15</text>
+  <path d="m43 48 4 4 10-12" fill="none" stroke="#fac132" stroke-linecap="round" stroke-linejoin="round" stroke-width="4" />
 </svg>
