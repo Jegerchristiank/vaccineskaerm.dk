@@ -613,7 +613,7 @@ button {
   }
 
   .observation-widget {
-    top: clamp(360px, 53vh, 470px);
+    top: clamp(300px, 45vh, 430px);
     width: min(440px, 35vw);
   }
 
