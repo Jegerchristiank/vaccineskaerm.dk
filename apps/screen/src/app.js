@@ -49,6 +49,10 @@ const stations = {
   p3: {
     name: "DR P3",
     url: "https://live-icy.gss.dr.dk/A/A05H.mp3"
+  },
+  voice: {
+    name: "The Voice",
+    url: "https://live-bauerdk.sharp-stream.com/thevoice_dk_mp3"
   }
 };
 

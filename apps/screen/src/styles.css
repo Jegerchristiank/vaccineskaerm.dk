@@ -409,7 +409,7 @@ button {
 
 .station-list {
   display: flex;
-  gap: min(1.1vw, 18px);
+  gap: min(1vw, 16px);
   align-items: center;
 }
 
@@ -426,7 +426,7 @@ button {
   display: flex;
   min-width: 0;
   align-items: center;
-  flex: 1 1 154px;
+  flex: 1 1 168px;
   gap: 10px;
   padding: 6px 4px;
   text-align: left;
@@ -471,13 +471,25 @@ button {
 
 .station-logo {
   display: block;
-  width: 52px;
-  height: 52px;
-  flex: 0 0 52px;
+  width: 88px;
+  height: 46px;
+  flex: 0 0 88px;
   overflow: hidden;
-  border-radius: 8px;
+  border-radius: 6px;
   box-shadow: 0 10px 22px rgba(0, 12, 26, 0.2);
   object-fit: contain;
+}
+
+.station-logo-square {
+  width: 50px;
+  height: 50px;
+  flex-basis: 50px;
+}
+
+.station-logo-voice {
+  width: 108px;
+  flex-basis: 108px;
+  background: #000;
 }
 
 .station-button.was-selected:not(.is-active) .station-logo {
@@ -670,14 +682,25 @@ button {
   }
 
   .station-button {
-    flex: 0 1 132px;
+    flex: 0 1 152px;
     gap: 8px;
   }
 
   .station-logo {
-    width: 46px;
-    height: 46px;
-    flex-basis: 46px;
+    width: 72px;
+    height: 38px;
+    flex-basis: 72px;
+  }
+
+  .station-logo-square {
+    width: 42px;
+    height: 42px;
+    flex-basis: 42px;
+  }
+
+  .station-logo-voice {
+    width: 88px;
+    flex-basis: 88px;
   }
 
   .station-copy strong {
