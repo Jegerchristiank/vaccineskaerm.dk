@@ -17,13 +17,10 @@
           <p id="dateLine" class="date-line">Tirsdag 2. juni 2026</p>
         </section>
 
-        <section class="observation-widget" aria-label="Ventetimer">
-          <p class="observation-label">Ventetid efter vaccination</p>
-          <time id="observationTimer" class="observation-time" datetime="PT15M">15:00</time>
-          <p id="observationEnd" class="observation-end">Klar til 15 minutters observation</p>
-          <div class="observation-progress" aria-hidden="true">
-            <span id="observationProgress"></span>
-          </div>
+        <section class="observation-widget" aria-label="Tidspunkt for afsluttet observation">
+          <p class="observation-label">15 minutter siden</p>
+          <time id="observationTimer" class="observation-time" datetime="">00:00:00</time>
+          <p id="observationEnd" class="observation-end">Blev du vaccineret på dette tidspunkt eller før, er ventetiden gået.</p>
         </section>
 
         <section class="info-carousel" aria-live="polite" aria-label="Venteinformation">
@@ -101,15 +98,6 @@
           </label>
         </div>
         <p id="radioStatus" class="status-text">Radio er slukket</p>
-      </div>
-
-      <div class="settings-group timer-settings">
-        <p class="settings-label">Ventetimer</p>
-        <div class="timer-actions">
-          <button id="startObservation" type="button" class="ghost-button">Start 15 min</button>
-          <button id="resetObservation" type="button" class="ghost-button">Nulstil</button>
-        </div>
-        <p id="observationStatus" class="status-text">Timeren er klar</p>
       </div>
 
       <div class="settings-group compact">

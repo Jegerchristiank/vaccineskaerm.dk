@@ -7,7 +7,7 @@ const SETTINGS_IDLE_CHECK_MS = 500;
 const SETTINGS_REOPEN_GRACE_MS = 4200;
 const CURSOR_IDLE_MS = 3200;
 const CURSOR_CLOSE_HIDE_MS = 2200;
-const OBSERVATION_DURATION_MS = 15 * 60 * 1000;
+const OBSERVATION_OFFSET_MS = 15 * 60 * 1000;
 const CAROUSEL_INTERVAL_MS = 12 * 1000;
 
 const carouselSlides = [
@@ -21,7 +21,7 @@ const carouselSlides = [
     kicker: "15 minutter",
     title: "Bliv siddende lidt endnu",
     text: "Ventetiden giver personalet mulighed for at reagere hurtigt, hvis kroppen reagerer på vaccinen.",
-    extra: "Når timeren rammer 00:00, er ventetiden gået."
+    extra: "Når uret for 15 minutter siden viser din vaccinationstid, er ventetiden gået."
   },
   {
     kicker: "Gåde",
@@ -62,11 +62,6 @@ const stationButtons = [...document.querySelectorAll(".station-button")];
 const stopRadio = document.querySelector("#stopRadio");
 const hideSettings = document.querySelector("#hideSettings");
 const observationTimer = document.querySelector("#observationTimer");
-const observationEnd = document.querySelector("#observationEnd");
-const observationProgress = document.querySelector("#observationProgress");
-const observationStatus = document.querySelector("#observationStatus");
-const startObservation = document.querySelector("#startObservation");
-const resetObservation = document.querySelector("#resetObservation");
 const carouselKicker = document.querySelector("#carouselKicker");
 const carouselTitle = document.querySelector("#carouselTitle");
 const carouselText = document.querySelector("#carouselText");
@@ -84,11 +79,11 @@ let settingsTimer = null;
 let settingsLastInteraction = 0;
 let settingsClosedUntil = 0;
 let cursorTimer = null;
-let observationEndAt = Number(localStorage.getItem("observationEndAt") || "0");
 let carouselIndex = 0;
 
 function updateClock() {
   const now = new Date();
+  const observationTime = new Date(now.getTime() - OBSERVATION_OFFSET_MS);
   const timeFormatter = new Intl.DateTimeFormat("da-DK", {
     timeZone: DENMARK_TIME_ZONE,
     hour: "2-digit",
@@ -106,60 +101,10 @@ function updateClock() {
 
   clock.textContent = timeFormatter.format(now).replace(/\./g, ":");
   clock.dateTime = now.toISOString();
+  observationTimer.textContent = timeFormatter.format(observationTime).replace(/\./g, ":");
+  observationTimer.dateTime = observationTime.toISOString();
   const formattedDate = dateFormatter.format(now).replace(" den ", " ");
   dateLine.textContent = formattedDate.charAt(0).toUpperCase() + formattedDate.slice(1);
-}
-
-function formatDuration(ms) {
-  const totalSeconds = Math.max(0, Math.ceil(ms / 1000));
-  const minutes = String(Math.floor(totalSeconds / 60)).padStart(2, "0");
-  const seconds = String(totalSeconds % 60).padStart(2, "0");
-  return `${minutes}:${seconds}`;
-}
-
-function formatEndTime(timestamp) {
-  return new Intl.DateTimeFormat("da-DK", {
-    timeZone: DENMARK_TIME_ZONE,
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false
-  }).format(new Date(timestamp)).replace(/\./g, ":");
-}
-
-function updateObservationTimer() {
-  if (!observationEndAt) {
-    observationTimer.textContent = "15:00";
-    observationTimer.dateTime = "PT15M";
-    observationEnd.textContent = "Klar til 15 minutters observation";
-    observationStatus.textContent = "Timeren er klar";
-    observationProgress.style.width = "0%";
-    document.body.classList.remove("observation-running", "observation-complete");
-    return;
-  }
-
-  const remaining = observationEndAt - Date.now();
-  const remainingClamped = Math.max(0, remaining);
-  const progress = Math.min(100, ((OBSERVATION_DURATION_MS - remainingClamped) / OBSERVATION_DURATION_MS) * 100);
-
-  observationTimer.textContent = formatDuration(remainingClamped);
-  observationTimer.dateTime = `PT${Math.ceil(remainingClamped / 1000)}S`;
-  observationEnd.textContent = remaining > 0 ? `Færdig kl. ${formatEndTime(observationEndAt)}` : "15 minutters observation er gået";
-  observationStatus.textContent = remaining > 0 ? `Færdig kl. ${formatEndTime(observationEndAt)}` : "Ventetiden er gået";
-  observationProgress.style.width = `${progress}%`;
-  document.body.classList.toggle("observation-running", remaining > 0);
-  document.body.classList.toggle("observation-complete", remaining <= 0);
-}
-
-function startObservationTimer() {
-  observationEndAt = Date.now() + OBSERVATION_DURATION_MS;
-  localStorage.setItem("observationEndAt", String(observationEndAt));
-  updateObservationTimer();
-}
-
-function resetObservationTimer() {
-  observationEndAt = 0;
-  localStorage.removeItem("observationEndAt");
-  updateObservationTimer();
 }
 
 function renderCarouselSlide() {
@@ -287,10 +232,8 @@ function stopRadioPlayback() {
 
 setInterval(() => {
   updateClock();
-  updateObservationTimer();
 }, 250);
 updateClock();
-updateObservationTimer();
 renderCarouselSlide();
 
 syncCampaignToggle();
@@ -329,16 +272,6 @@ campaignToggle.addEventListener("change", () => {
 
 hideSettings.addEventListener("click", () => {
   hideSettingsPanel({ pauseBeforeReopen: true, hideCursorSoon: true });
-});
-
-startObservation.addEventListener("click", () => {
-  revealSettings();
-  startObservationTimer();
-});
-
-resetObservation.addEventListener("click", () => {
-  revealSettings();
-  resetObservationTimer();
 });
 
 ["pointermove", "pointerdown", "touchstart"].forEach((eventName) => {
