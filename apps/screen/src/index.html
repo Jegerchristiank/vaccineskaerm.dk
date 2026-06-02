@@ -68,47 +68,41 @@
           <div class="panel-rule"></div>
           <p id="campaignBody">Her kan du få influenza-vaccinen, pneumokok-vaccinen og covid-vaccinen.</p>
           <p id="campaignMeta" class="campaign-meta"></p>
+          <div id="campaignAnswers" class="campaign-answers" hidden></div>
         </div>
       </section>
     </main>
 
     <aside id="settingsPanel" class="settings-panel" aria-label="Indstillinger">
-      <div class="settings-title">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Z"></path>
-          <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 1.55V21a2 2 0 0 1-4 0v-.09a1.7 1.7 0 0 0-1-1.55 1.7 1.7 0 0 0-1.88.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.55-1H3a2 2 0 0 1 0-4h.09a1.7 1.7 0 0 0 1.55-1 1.7 1.7 0 0 0-.34-1.88l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-1.55V3a2 2 0 0 1 4 0v.09a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.88-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.7 1.7 0 0 0 19.4 9c.2.6.8 1 1.55 1H21a2 2 0 0 1 0 4h-.09a1.7 1.7 0 0 0-1.55 1Z"></path>
-        </svg>
-        <strong>Indstillinger</strong>
+      <div class="settings-audio">
+        <button id="stopRadio" type="button" class="stop-radio-button">Sluk radio</button>
+        <label class="volume-control">
+          <span>Lyd</span>
+          <input id="volumeControl" type="range" min="0" max="1" step="0.05" value="0.55" />
+        </label>
+        <p id="radioStatus" class="status-text">Radio er slukket</p>
       </div>
 
-      <div class="settings-group">
+      <div class="settings-group station-settings">
         <p class="settings-label">Radiokanal</p>
         <div class="station-list" role="group" aria-label="Radiokanal">
-          <button class="station-button" type="button" data-station="p4">
+          <button class="station-button" type="button" data-station="p4" aria-label="DR P4 Sjælland">
             <img class="station-logo station-logo-wide" src="/assets/radio-dr-p4.png" alt="" aria-hidden="true" />
             <span class="station-copy"><strong>DR P4</strong><small>Sjælland</small></span>
           </button>
-          <button class="station-button" type="button" data-station="p5">
+          <button class="station-button" type="button" data-station="p5" aria-label="DR P5">
             <img class="station-logo station-logo-wide" src="/assets/radio-dr-p5.png" alt="" aria-hidden="true" />
             <span class="station-copy"><strong>DR P5</strong><small>Rolig musik</small></span>
           </button>
-          <button class="station-button" type="button" data-station="p3">
+          <button class="station-button" type="button" data-station="p3" aria-label="DR P3">
             <img class="station-logo station-logo-square" src="/assets/radio-dr-p3.webp" alt="" aria-hidden="true" />
             <span class="station-copy"><strong>DR P3</strong><small>Live radio</small></span>
           </button>
-          <button class="station-button" type="button" data-station="voice">
+          <button class="station-button" type="button" data-station="voice" aria-label="The Voice">
             <img class="station-logo station-logo-voice" src="/assets/radio-the-voice.png" alt="" aria-hidden="true" />
             <span class="station-copy"><strong>The Voice</strong><small>Hits</small></span>
           </button>
         </div>
-        <div class="radio-actions">
-          <button id="stopRadio" type="button" class="ghost-button">Sluk radio</button>
-          <label class="volume-control">
-            <span>Lyd</span>
-            <input id="volumeControl" type="range" min="0" max="1" step="0.05" value="0.55" />
-          </label>
-        </div>
-        <p id="radioStatus" class="status-text">Radio er slukket</p>
       </div>
 
       <div class="settings-group compact">
