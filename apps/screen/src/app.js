@@ -142,6 +142,7 @@ function setActiveStation(stationKey) {
   stationButtons.forEach((button) => {
     const isActive = button.dataset.station === stationKey && !audio.paused;
     button.classList.toggle("is-active", isActive);
+    button.classList.toggle("was-selected", button.dataset.station === stationKey);
     button.setAttribute("aria-pressed", String(isActive));
   });
 }

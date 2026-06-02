@@ -276,6 +276,51 @@ button {
   stroke-linejoin: round;
 }
 
+.booking-panel .booking-color-icon {
+  width: clamp(40px, 5.8vh, 62px);
+  height: clamp(40px, 5.8vh, 62px);
+  flex: 0 0 auto;
+  fill: none;
+  filter: drop-shadow(0 12px 22px rgba(0, 18, 38, 0.28));
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.booking-panel .campaign-heading {
+  gap: 12px;
+  font-size: clamp(0.96rem, 2vh, 1.32rem);
+}
+
+.booking-color-icon .icon-backdrop {
+  fill: var(--yellow-400);
+  stroke: rgba(255, 255, 255, 0.7);
+  stroke-width: 2;
+}
+
+.booking-color-icon .icon-card {
+  fill: rgba(184, 238, 244, 0.94);
+  stroke: #002e5c;
+  stroke-width: 2.4;
+}
+
+.booking-color-icon .icon-card-top,
+.booking-color-icon .icon-check {
+  fill: #0d608f;
+  stroke: #002e5c;
+  stroke-width: 2.4;
+}
+
+.booking-color-icon .icon-pin,
+.booking-color-icon .icon-syringe {
+  stroke: #002e5c;
+  stroke-width: 3;
+}
+
+.booking-color-icon .icon-checkmark {
+  stroke: #fff;
+  stroke-width: 3.2;
+}
+
 .panel-rule {
   width: 100%;
   height: 2px;
