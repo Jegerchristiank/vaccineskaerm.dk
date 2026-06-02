@@ -10,9 +10,10 @@
   <body>
     <main class="screen-shell" aria-live="polite">
       <section class="ambient-screen" data-screen="ambient">
-        <img class="ambient-background" src="/assets/waiting-room-background.png" alt="" aria-hidden="true" />
+        <img class="ambient-background" src="/assets/figure-background-gray.png" alt="" aria-hidden="true" />
 
         <section class="time-overlay" aria-label="Tid og dato">
+          <p class="clock-label">Klokken er nu</p>
           <time id="clock" class="clock" datetime="">00:00:00</time>
           <p id="dateLine" class="date-line">Tirsdag 2. juni 2026</p>
         </section>
@@ -24,10 +25,14 @@
         </section>
 
         <section class="info-carousel" aria-live="polite" aria-label="Venteinformation">
-          <p id="carouselKicker" class="carousel-kicker">Mens du venter</p>
-          <h1 id="carouselTitle">Hold øje med kroppen</h1>
-          <p id="carouselText">Sig til personalet, hvis du bliver utilpas, får åndenød, udslæt eller føler dig svimmel.</p>
-          <p id="carouselExtra" class="carousel-extra">Vi hjælper dig gerne.</p>
+          <div id="carouselCard" class="carousel-card">
+            <p id="carouselKicker" class="carousel-kicker">Mens du venter</p>
+            <h1 id="carouselTitle">Hold øje med kroppen</h1>
+            <p id="carouselText">Sig til personalet, hvis du bliver utilpas, får åndenød, udslæt eller føler dig svimmel.</p>
+            <p id="carouselExtra" class="carousel-extra">Vi hjælper dig gerne.</p>
+            <p id="carouselCountdown" class="carousel-countdown" hidden></p>
+          </div>
+          <div id="carouselDots" class="carousel-dots" aria-hidden="true"></div>
         </section>
       </section>
 
@@ -55,12 +60,13 @@
               <path d="M6 24v-8l19-7v22L6 24Z"></path>
               <path d="M25 15h4a5 5 0 0 1 0 10h-4M10 24l3 9h5l-4-8"></path>
             </svg>
-            <span>Vaccination - vi er til for dig</span>
+            <span id="campaignKicker">Vaccination - vi er til for dig</span>
           </div>
           <div class="panel-rule"></div>
-          <h2>Bestil dine vacciner på <span>vacciner.dk</span></h2>
+          <h2 id="campaignTitle">Bestil dine vacciner på <span>vacciner.dk</span></h2>
           <div class="panel-rule"></div>
-          <p>Her kan du få influenza-vaccinen, pneumokok-vaccinen og covid-vaccinen.</p>
+          <p id="campaignBody">Her kan du få influenza-vaccinen, pneumokok-vaccinen og covid-vaccinen.</p>
+          <p id="campaignMeta" class="campaign-meta"></p>
         </div>
       </section>
     </main>
