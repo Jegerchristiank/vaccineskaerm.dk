@@ -89,9 +89,7 @@ button {
   height: 100%;
   object-fit: contain;
   object-position: center center;
-  opacity: 0.78;
-  mix-blend-mode: screen;
-  filter: saturate(0) contrast(1.14) brightness(0.92);
+  opacity: 0.74;
   user-select: none;
 }
 
@@ -303,10 +301,10 @@ button {
   padding: min(7vh, 78px) min(5.6vw, 104px);
   background:
     linear-gradient(90deg, rgba(0, 31, 63, 0.08), rgba(0, 22, 46, 0.22)),
-    url("/assets/figure-background-gray.png") center / contain no-repeat,
+    url("/assets/figure-lineart-clean.png") center / contain no-repeat,
     radial-gradient(circle at 24% 18%, rgba(19, 107, 154, 0.92), transparent 38%),
     linear-gradient(135deg, #002f5f 0%, #00517f 49%, #00335f 100%);
-  background-blend-mode: normal, screen, normal, normal;
+  background-blend-mode: normal;
   opacity: 0;
   pointer-events: none;
   transform: scale(1.018);
