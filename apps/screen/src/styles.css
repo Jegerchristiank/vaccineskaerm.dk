@@ -232,9 +232,10 @@ button {
 }
 
 .carousel-card[data-type="riddle"] h1 {
-  max-width: 13ch;
+  max-width: min(19ch, 100%);
   padding-top: clamp(18px, 2.5vh, 30px);
-  font-size: clamp(2.2rem, 4.8vh, 4rem);
+  font-size: clamp(1.82rem, 4.15vh, 3.5rem);
+  line-height: 1.12;
 }
 
 .info-carousel p:not(.carousel-kicker) {
@@ -572,8 +573,8 @@ button {
 
 .campaign-screen[data-variant="riddle-question"] .campaign-content h2 {
   max-width: min(1160px, 88vw);
-  font-size: clamp(2.7rem, 7.2vh, 6.2rem);
-  line-height: 1.04;
+  font-size: clamp(2.35rem, 6.6vh, 5.8rem);
+  line-height: 1.08;
 }
 
 .campaign-screen[data-variant="answers"] .campaign-content p,
