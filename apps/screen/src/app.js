@@ -3,6 +3,7 @@ const RIDDLE_ANSWER_INTERVAL_MS = 3 * 60 * 1000;
 const CAMPAIGN_FIRST_DELAY_MS = RIDDLE_ANSWER_INTERVAL_MS;
 const CAMPAIGN_INTERVAL_MS = RIDDLE_ANSWER_INTERVAL_MS;
 const CAMPAIGN_DURATION_MS = 24 * 1000;
+const RIDDLE_QUESTION_DURATION_MS = 10 * 1000;
 const CAMPAIGN_ANSWER_DURATION_MS = 16 * 1000;
 const SETTINGS_VISIBLE_MS = 6500;
 const SETTINGS_IDLE_CHECK_MS = 500;
@@ -920,6 +921,9 @@ let campaignEnabled = localStorage.getItem("campaignEnabled") !== "false";
 let selectedStation = localStorage.getItem("selectedStation") || "";
 let campaignTimer = null;
 let campaignHideTimer = null;
+let campaignAnswerTimer = null;
+let campaignTransitionTimer = null;
+let campaignContentAnimationTimer = null;
 let settingsTimer = null;
 let settingsLastInteraction = 0;
 let settingsClosedUntil = 0;
@@ -1013,7 +1017,7 @@ function updateRiddleCountdown() {
     return;
   }
 
-  carouselCountdown.textContent = `Svar på ${slide.label.toLowerCase()} vises om ${formatCountdown(getRiddleAnswerAt(slide.id) - Date.now())}`;
+  carouselCountdown.textContent = `${slide.label} vises om ${formatCountdown(getRiddleAnswerAt(slide.id) - Date.now())}`;
 }
 
 function renderCarouselSlide({ animate = false } = {}) {
@@ -1052,7 +1056,7 @@ function refreshDailyRiddles(now = new Date()) {
   return true;
 }
 
-function renderCampaignAnswers(answers = [], currentAnswerId = "") {
+function renderCampaignAnswers(answers = [], currentAnswerId = "", showCurrentAnswer = true) {
   campaignAnswers.replaceChildren();
   campaignAnswers.hidden = answers.length === 0;
 
@@ -1061,6 +1065,7 @@ function renderCampaignAnswers(answers = [], currentAnswerId = "") {
     item.className = "campaign-answer-item";
     const isCurrent = answer.id === currentAnswerId;
     item.classList.toggle("is-current", isCurrent);
+    item.classList.toggle("is-pending-answer", isCurrent && !showCurrentAnswer);
     item.classList.toggle("is-hidden-answer", !isCurrent);
 
     const label = document.createElement("span");
@@ -1068,7 +1073,7 @@ function renderCampaignAnswers(answers = [], currentAnswerId = "") {
 
     item.append(label);
 
-    if (isCurrent) {
+    if (isCurrent && showCurrentAnswer) {
       const value = document.createElement("strong");
       value.textContent = answer.answer;
       item.append(value);
@@ -1085,19 +1090,58 @@ function renderCampaignSlide(slide) {
   campaignTitle.innerHTML = slide.titleHtml;
   campaignBody.textContent = slide.body;
   campaignMeta.textContent = slide.meta || "";
-  renderCampaignAnswers(slide.answers, slide.currentAnswerId);
+  renderCampaignAnswers(slide.answers, slide.currentAnswerId, slide.showCurrentAnswer !== false);
 }
 
-function getNextCampaignSlide() {
+function triggerCampaignContentEnter() {
+  clearTimeout(campaignContentAnimationTimer);
+  campaignScreen.classList.remove("is-content-entering");
+  void campaignScreen.offsetWidth;
+  campaignScreen.classList.add("is-content-entering");
+  campaignContentAnimationTimer = setTimeout(() => {
+    campaignScreen.classList.remove("is-content-entering");
+  }, 760);
+}
+
+function transitionCampaignSlide(slide) {
+  clearTimeout(campaignTransitionTimer);
+  clearTimeout(campaignContentAnimationTimer);
+  campaignScreen.classList.remove("is-content-entering");
+  campaignScreen.classList.add("is-content-leaving");
+
+  campaignTransitionTimer = setTimeout(() => {
+    renderCampaignSlide(slide);
+    campaignScreen.classList.remove("is-content-leaving");
+    triggerCampaignContentEnter();
+  }, 230);
+}
+
+function getNextRiddle() {
   const riddle = riddleAnswers[nextRiddleAnswerIndex];
   nextRiddleAnswerIndex = (nextRiddleAnswerIndex + 1) % riddleAnswers.length;
+  return riddle;
+}
 
+function createRiddleQuestionSlide(riddle) {
+  return {
+    variant: "riddle-question",
+    kicker: riddle.label,
+    titleHtml: riddle.question,
+    body: "Læs gåden igennem, og tænk over svaret.",
+    meta: "Svaret kommer om 10 sekunder.",
+    answers: riddleAnswers,
+    currentAnswerId: riddle.id,
+    showCurrentAnswer: false
+  };
+}
+
+function createRiddleAnswerSlide(riddle) {
   return {
     variant: "answers",
     kicker: `Svar på ${riddle.label.toLowerCase()}`,
     titleHtml: riddle.answer,
     body: riddle.answerText,
-    meta: "Næste gådesvar kommer om cirka 3 minutter.",
+    meta: "Næste gåde kommer om cirka 3 minutter.",
     answers: riddleAnswers,
     currentAnswerId: riddle.id,
     durationMs: CAMPAIGN_ANSWER_DURATION_MS
@@ -1110,16 +1154,28 @@ function setCampaignVisible(visible) {
 
   if (!visible) {
     delete document.body.dataset.campaignVariant;
+    campaignScreen.classList.remove("is-content-entering", "is-content-leaving");
   }
 }
 
 function showCampaign() {
   if (!campaignEnabled) return;
-  const slide = getNextCampaignSlide();
-  renderCampaignSlide(slide);
+  const riddle = getNextRiddle();
+  const questionSlide = createRiddleQuestionSlide(riddle);
+
+  renderCampaignSlide(questionSlide);
   setCampaignVisible(true);
+  triggerCampaignContentEnter();
+
+  clearTimeout(campaignAnswerTimer);
   clearTimeout(campaignHideTimer);
-  campaignHideTimer = setTimeout(() => setCampaignVisible(false), slide.durationMs || CAMPAIGN_DURATION_MS);
+  campaignAnswerTimer = setTimeout(() => {
+    const answerSlide = createRiddleAnswerSlide(riddle);
+    transitionCampaignSlide(answerSlide);
+    clearTimeout(campaignHideTimer);
+    campaignHideTimer = setTimeout(() => setCampaignVisible(false), answerSlide.durationMs || CAMPAIGN_DURATION_MS);
+  }, RIDDLE_QUESTION_DURATION_MS);
+
   queueNextCampaign(CAMPAIGN_INTERVAL_MS);
 }
 
@@ -1138,6 +1194,9 @@ function queueNextCampaign(delay) {
 function scheduleCampaign() {
   clearTimeout(campaignTimer);
   clearTimeout(campaignHideTimer);
+  clearTimeout(campaignAnswerTimer);
+  clearTimeout(campaignTransitionTimer);
+  clearTimeout(campaignContentAnimationTimer);
   setCampaignVisible(false);
 
   if (!campaignEnabled) {
