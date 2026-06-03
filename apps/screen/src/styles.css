@@ -608,6 +608,7 @@ button {
   display: flex;
   align-items: center;
   gap: 14px;
+  overflow: hidden;
 }
 
 .settings-group.compact {
@@ -641,9 +642,29 @@ button {
 .station-list {
   display: flex;
   min-width: 0;
+  max-width: 100%;
   gap: 10px;
   align-items: center;
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 3px 3px 9px;
+  scrollbar-color: rgba(184, 238, 244, 0.7) rgba(255, 255, 255, 0.1);
+  scrollbar-width: thin;
+  -webkit-overflow-scrolling: touch;
+}
+
+.station-list::-webkit-scrollbar {
+  height: 8px;
+}
+
+.station-list::-webkit-scrollbar-track {
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.station-list::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(184, 238, 244, 0.7);
 }
 
 .station-button,
@@ -725,6 +746,12 @@ button {
   width: 128px;
   flex-basis: 128px;
   background: #000;
+}
+
+.station-logo-nova {
+  width: 132px;
+  flex-basis: 132px;
+  background: #fff;
 }
 
 .station-button.was-selected:not(.is-active) .station-logo {
@@ -974,6 +1001,11 @@ button {
     flex-basis: 110px;
   }
 
+  .station-logo-nova {
+    width: 116px;
+    flex-basis: 116px;
+  }
+
   .station-copy {
     display: none;
   }
@@ -1098,7 +1130,7 @@ button {
   }
 
   .station-list {
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
   }
 
   .close-button {
@@ -1114,12 +1146,12 @@ button {
   }
 
   .time-overlay {
-    top: 18vh;
+    top: 15vh;
     left: 18px;
   }
 
   .clock {
-    font-size: clamp(3.2rem, 10.5vh, 4.6rem);
+    font-size: clamp(3rem, 9vh, 4.1rem);
   }
 
   .date-line {
@@ -1127,24 +1159,52 @@ button {
   }
 
   .observation-widget {
+    top: 36vh;
     right: 18px;
-    bottom: 24vh;
-    width: calc(100vw - 36px);
+    bottom: auto;
+    left: 18px;
+    width: auto;
+  }
+
+  .observation-label {
+    font-size: 0.78rem;
   }
 
   .observation-time {
-    font-size: clamp(2.8rem, 8vh, 4.2rem);
+    font-size: clamp(2rem, 5.8vh, 3rem);
+  }
+
+  .observation-end {
+    max-width: 30ch;
+    margin-top: 4px;
+    font-size: 0.9rem;
+    line-height: 1.22;
   }
 
   .info-carousel {
-    top: 58vh;
+    top: 55vh;
     right: 18px;
     left: 18px;
     width: auto;
   }
 
   .carousel-card {
-    min-height: 210px;
+    min-height: 0;
+  }
+
+  .carousel-card[data-type="riddle"] {
+    padding-left: 14px;
+  }
+
+  .carousel-card[data-type="riddle"] .carousel-kicker {
+    gap: 8px;
+    font-size: 0.86rem;
+  }
+
+  .carousel-card[data-type="riddle"] .carousel-kicker::before {
+    width: 26px;
+    height: 26px;
+    font-size: 0.9rem;
   }
 
   .campaign-heading {
@@ -1154,6 +1214,43 @@ button {
 
   .info-carousel h1 {
     font-size: 1.8rem;
+  }
+
+  .carousel-card[data-type="riddle"] h1 {
+    padding-top: 10px;
+    font-size: clamp(1.45rem, 5.8vw, 1.85rem);
+    line-height: 1.05;
+  }
+
+  .info-carousel p:not(.carousel-kicker) {
+    margin-top: 12px;
+    font-size: 0.98rem;
+    line-height: 1.28;
+  }
+
+  .carousel-card[data-type="riddle"] .carousel-extra,
+  .carousel-card[data-type="riddle"] .carousel-countdown {
+    margin-top: 8px !important;
+  }
+
+  .carousel-card[data-type="riddle"] .carousel-countdown {
+    min-height: 34px;
+    padding: 6px 10px;
+    font-size: 0.86rem !important;
+  }
+
+  .carousel-dots {
+    gap: 9px;
+    margin-top: 12px;
+  }
+
+  .carousel-dot {
+    width: 10px;
+    height: 10px;
+  }
+
+  .carousel-dot.is-active {
+    width: 28px;
   }
 
   .campaign-content {

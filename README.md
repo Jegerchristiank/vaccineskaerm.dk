@@ -7,7 +7,7 @@ Fuldskærms infoskærm til vaccineventeværelse inspireret af vacciner.dk og Reg
 - Fuldskærmsvisning uden scroll.
 - Dansk lokal tid med sekunder.
 - Skjult indstillingspanel, der kun vises efter musebevægelse eller touch.
-- Radioknapper til DR P4 Sjælland, DR P5 og DR P3.
+- Radioknapper til DR P4 Sjælland, DR P5, DR P3, The Voice og Nova FM.
 - Kampagneslide med fast besked om vacciner.dk.
 - Deterministisk kampagneskift: når kampagneslides er slået til, vises kampagnen mindst én gang inden for 15 minutter.
 
