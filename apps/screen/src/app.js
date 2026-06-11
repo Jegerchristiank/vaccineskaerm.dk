@@ -13,271 +13,348 @@ const CURSOR_CLOSE_HIDE_MS = 2200;
 const OBSERVATION_OFFSET_MS = 15 * 60 * 1000;
 const CAROUSEL_INTERVAL_MS = 12 * 1000;
 
-const RIDDLE_ROTATION_INTERVAL_HOURS = 2;
-const RIDDLES_PER_ROTATION = 4;
+const RIDDLE_REPEAT_GUARD_MS = 60 * 60 * 1000;
+const RIDDLE_QUEUE_LOOKAHEAD_COUNT = 4;
+const RIDDLE_QUEUE_LOW_WATERMARK = RIDDLE_QUEUE_LOOKAHEAD_COUNT + 2;
+const RIDDLE_QUEUE_STORAGE_KEY = "riddleQueueStateV2";
 
 const RIDDLE_BANK = [
   {
-    question: "Jeg bliver vådere, jo mere jeg tørrer. Hvad er jeg?",
-    answer: "Et håndklæde.",
-    answerText: "Et håndklæde suger vand, hver gang det tørrer noget andet."
+    question: "Alle i venteområdet har mig. Ingen kan låne mig ud. Jo mere man bruger mig, jo mindre har man tilbage.",
+    answer: "Ventetid."
   },
   {
-    question: "Jeg har hænder og ansigt, men ingen krop. Hvad er jeg?",
-    answer: "Et ur.",
-    answerText: "Et ur kan have visere som hænder og en urskive som ansigt."
+    question: "Jeg består af sorte og hvide linjer. Jeg bliver læst uden øjne og forstået uden sprog.",
+    answer: "En stregkode."
   },
   {
-    question: "Jeg har byer, veje og vand, men ingen mennesker, biler eller fisk. Hvad er jeg?",
-    answer: "Et kort.",
-    answerText: "Et kort viser steder og ruter, men indeholder kun tegninger af dem."
+    question: "To fædre og to sønner møder op sammen, men der står kun tre personer ved skranken. Hvordan kan det passe?",
+    answer: "Det er en bedstefar, en far og en søn."
   },
   {
-    question: "Jeg følger dig i lyset, men forsvinder i mørke. Hvad er jeg?",
-    answer: "Din skygge.",
-    answerText: "Skyggen opstår, når du står mellem lyset og noget andet."
+    question: "En medarbejder er den første, der går ind i vaccinationscenteret, og den sidste, der går ud. Alligevel har han ikke ventet længst. Hvorfor?",
+    answer: "Han arbejder der og åbner/lukker centeret."
   },
   {
-    question: "Hvad bliver større, jo mere man tager væk fra det?",
-    answer: "Et hul.",
-    answerText: "Et hul vokser netop ved, at der fjernes mere omkring det."
+    question: "En person har tid klokken 10.00, kommer 9.55 og får alligevel at vide, at han er for tidligt på den. Hvorfor?",
+    answer: "Tiden er klokken 10.00 på en anden dato."
   },
   {
-    question: "Hvad kan du bryde uden at røre ved det?",
-    answer: "Et løfte.",
-    answerText: "Et løfte brydes med en handling eller beslutning, ikke med hænderne."
+    question: "En skærm viser en ny gåde hvert kvarter. Den første vises klokken 9.00. Hvor mange forskellige gåder er vist klokken 10.00, hvis gåden klokken 10.00 tæller med?",
+    answer: "Fem: 9.00, 9.15, 9.30, 9.45 og 10.00."
   },
   {
-    question: "Hvad tilhører dig, men bliver brugt mest af andre?",
-    answer: "Dit navn.",
-    answerText: "Andre bruger dit navn, når de taler til dig eller om dig."
+    question: "En person bliver sendt til nummer 8, før nummer 7 er blevet kaldt. Systemet er ikke i stykker. Hvordan?",
+    answer: "Nummer 8 er en vaccinationsstation, ikke et kønummer."
   },
   {
-    question: "Jeg kommer altid, men når aldrig frem. Hvad er jeg?",
-    answer: "I morgen.",
-    answerText: "Når dagen kommer, hedder den ikke længere i morgen, men i dag."
+    question: "En person bliver kaldt frem, men ingen siger hans navn, og ingen råber. Hvordan ved han, at det er hans tur?",
+    answer: "Hans kønummer vises på skærmen."
   },
   {
-    question: "Jeg har blade, men er ikke et træ. Jeg kan fortælle uden stemme. Hvad er jeg?",
-    answer: "En bog.",
-    answerText: "En bog har sider, som også kan kaldes blade, og fortæller gennem tekst."
+    question: "En person sidder i observation hele formiddagen, men er ikke selv blevet vaccineret. Hvordan kan det passe?",
+    answer: "Personen er medarbejder og observerer området."
   },
   {
-    question: "Jeg kan flyve uden vinger og græde uden øjne. Hvad er jeg?",
-    answer: "En sky.",
-    answerText: "Skyer driver over himlen, og regn kan beskrives som skyens tårer."
+    question: "Jeg har felter, men er ikke en mark. Jeg har kryds, men er ikke et valgsted. Jeg er ofte færdig, før besøget går videre.",
+    answer: "Et spørgeskema."
   },
   {
-    question: "Jeg siger ingenting, men svarer når du råber. Hvad er jeg?",
-    answer: "Et ekko.",
-    answerText: "Et ekko er lyden af din egen stemme, der bliver kastet tilbage."
+    question: "Hvilken kø kan gå i stå, selvom der ikke står et eneste menneske i den?",
+    answer: "En printerkø."
   },
   {
-    question: "Hvad er fuld af huller, men kan stadig holde vand?",
-    answer: "En svamp.",
-    answerText: "En svamp har mange små huller, men kan suge og holde på vand."
+    question: "En tid kan være ledig, selvom alle stole er optaget. Hvordan?",
+    answer: "Det er en ledig bookingtid, ikke en ledig siddeplads."
   },
   {
-    question: "Hvad har sorte og hvide tænder, men spiser aldrig?",
-    answer: "Et klaver.",
-    answerText: "Klaverets tangenter ligner en række tænder, men de bruges til musik."
+    question: "En person går ud med færre papirer, end han kom ind med, men han har ikke mistet noget. Hvorfor?",
+    answer: "Han har afleveret et skema ved check-in."
   },
   {
-    question: "Hvad går gennem byer og marker, men bevæger sig aldrig?",
-    answer: "En vej.",
-    answerText: "En vej ligger stille, selvom den fører mennesker gennem mange steder."
+    question: "Når tallet på skærmen bliver større, bliver mit tal mindre. Hvad er jeg?",
+    answer: "Antallet af personer foran dig i køen."
   },
   {
-    question: "Hvad har hoved og hale, men ingen krop?",
-    answer: "En mønt.",
-    answerText: "En mønt har to sider, som ofte kaldes hoved og hale."
+    question: "Hvad kan være langt, selvom ingen står i det?",
+    answer: "En venteliste."
   },
   {
-    question: "Hvad går kun opad og kommer aldrig ned igen?",
-    answer: "Din alder.",
-    answerText: "Alder stiger med tiden og kan ikke sættes tilbage."
+    question: "Jeg skal helst ikke brydes, så noget andet kan blive brudt. Hvad er jeg?",
+    answer: "Kølekæden, som hjælper med at bryde smittekæden."
   },
   {
-    question: "Jeg bliver født høj og dør lav. Hvad er jeg?",
-    answer: "Et stearinlys.",
-    answerText: "Et stearinlys bliver kortere, mens det brænder."
+    question: "En kurve bliver knækket, men der er hverken lyd, skår eller oprydning bagefter. Hvilken kurve er det?",
+    answer: "Smittekurven."
   },
   {
-    question: "Hvad kan fylde et helt rum uden at tage plads?",
-    answer: "Lys.",
-    answerText: "Lys kan brede sig i rummet, men det fylder ikke som en genstand."
+    question: "Jeg bestemmer, hvor mennesker står, selvom jeg selv ligger helt stille på gulvet.",
+    answer: "En gulvmarkering."
   },
   {
-    question: "Hvad kan falde hele dagen uden at slå sig?",
-    answer: "Regnen.",
-    answerText: "Regndråber falder fra skyerne, men kan ikke komme til skade."
+    question: "Jeg har ti cifre og begynder med en dato, men jeg er ikke en kalender.",
+    answer: "Et CPR-nummer."
   },
   {
-    question: "Hvad har mange øjne, men kan ikke se?",
-    answer: "En kartoffel.",
-    answerText: "De små spiringspunkter på en kartoffel kaldes øjne."
+    question: "Personalet spørger om en dato, de allerede kan se. De spørger ikke, fordi de har glemt den. Hvorfor spørger de?",
+    answer: "For at kontrollere identiteten, typisk fødselsdatoen."
   },
   {
-    question: "Hvad kan du holde uden at bruge hænderne?",
-    answer: "Vejret.",
-    answerText: "At holde vejret betyder at lade være med at trække vejret et øjeblik."
+    question: "To personer har samme navn og samme fødselsdato, men personalet kan stadig skelne dem sikkert fra hinanden. Hvordan?",
+    answer: "De har forskellige CPR-numre."
   },
   {
-    question: "Hvad kan rejse rundt i verden, mens det bliver i hjørnet?",
-    answer: "Et frimærke.",
-    answerText: "Frimærket sidder i hjørnet af brevet, mens brevet sendes afsted."
+    question: "Jeg kan identificere dig i sundhedsvæsenet, selvom jeg ikke har et billede af dig.",
+    answer: "Sundhedskortet."
   },
   {
-    question: "Jeg har tænder, men spiser aldrig. Hvad er jeg?",
-    answer: "En kam.",
-    answerText: "En kam har tænder, der reder hår, men den kan ikke spise."
+    question: "Jeg kan udløbe, selvom jeg aldrig har levet.",
+    answer: "En udløbsdato."
   },
   {
-    question: "Jeg har hals, men intet hoved. Hvad er jeg?",
-    answer: "En flaske.",
-    answerText: "En flaske har en flaskehals, men ikke et rigtigt hoved."
+    question: "Jeg har hals og krop, men hverken hoved, ben eller arme. Jeg står ofte koldt, indtil jeg skal bruges.",
+    answer: "Et hætteglas."
   },
   {
-    question: "Jeg har en munding, men taler aldrig, og et leje, men sover aldrig. Hvad er jeg?",
-    answer: "En flod.",
-    answerText: "En flod kan have en munding og et leje, men den er ikke levende."
+    question: "Jo mere man tager ud af mig, jo større bliver jeg.",
+    answer: "Den tomme plads i køleskabet."
   },
   {
-    question: "Hvilken nøgle kan ikke låse noget op?",
-    answer: "En musiknøgle.",
-    answerText: "En musiknøgle bruges i noder, ikke i en lås."
+    question: "En person møder op uden vaccinationstid og går alligevel direkte videre uden at springe køen over. Hvorfor?",
+    answer: "Personen er medarbejder og møder på arbejde."
   },
   {
-    question: "Hvis du smiler til mig, smiler jeg tilbage. Hvad er jeg?",
-    answer: "Et spejl.",
-    answerText: "Et spejl viser dit eget ansigt tilbage til dig."
+    question: "En person får svaret på gåden, før han ser spørgsmålet. Hvordan kan det ske?",
+    answer: "Han kigger på skærmen lige før den skifter fra svaret på den gamle gåde til den nye gåde."
   },
   {
-    question: "Hvad bliver brudt, så snart man taler?",
-    answer: "Stilheden.",
-    answerText: "Stilhed findes kun, indtil nogen laver lyd."
+    question: "Alle i venteområdet kan se gåden, men én person kendte svaret, før den kom på skærmen. Hvem?",
+    answer: "Personen, der skrev gåden."
   },
   {
-    question: "Hvad kan du fange, men ikke kaste?",
-    answer: "En forkølelse.",
-    answerText: "Man kan sige, at man fanger en forkølelse, men den kan ikke kastes."
+    question: "En gåde bliver kortere hele tiden, uden at der fjernes et eneste ord. Hvordan?",
+    answer: "Tiden, den er tilbage på skærmen, bliver kortere."
   },
   {
-    question: "Jeg ligger ved døren og bliver trådt på, men byder alle velkommen. Hvad er jeg?",
-    answer: "En dørmåtte.",
-    answerText: "Dørmåtten ligger ved indgangen og bruges, når folk kommer ind."
+    question: "Hvilket stik kan hjælpe dig med en gåde, men aldrig sættes i en arm?",
+    answer: "Et stikord."
   },
   {
-    question: "Jeg bærer folk over vandet, men går aldrig selv. Hvad er jeg?",
-    answer: "En bro.",
-    answerText: "En bro står stille, mens mennesker kan gå eller køre over den."
+    question: "Hvilket stik kan give strøm, men ikke beskyttelse?",
+    answer: "Et elstik."
   },
   {
-    question: "Jeg åbner mig, når himlen lukker op. Hvad er jeg?",
-    answer: "En paraply.",
-    answerText: "Når det regner, slår man paraplyen op for at holde sig tør."
+    question: "Hvilken nål peger, men prikker ikke?",
+    answer: "En kompasnål."
   },
   {
-    question: "Jeg bliver sværere at bære, jo flere der kender mig. Hvad er jeg?",
-    answer: "En hemmelighed.",
-    answerText: "En hemmelighed er lettest at holde, når få personer kender den."
+    question: "Hvilken prøve kan være tilfældig uden at være taget fra en person?",
+    answer: "En stikprøve."
   },
   {
-    question: "Hvad har tunge, men kan ikke tale?",
-    answer: "En sko.",
-    answerText: "En sko har en del, der kaldes tungen, men den kan ikke sige noget."
+    question: "En borger bliver vist ind gennem døren, men døren er ikke åbnet for hans skyld. Hvorfor?",
+    answer: "Han går ind sammen med den person, han ledsager."
   },
   {
-    question: "Hvad har rødder, men står ikke i jorden?",
-    answer: "En tand.",
-    answerText: "En tand har en rod nede i kæben, men den er ikke en plante."
+    question: "Tre generationer møder op: to mødre og to døtre. Alligevel er de kun tre personer. Hvordan?",
+    answer: "Det er en bedstemor, en mor og en datter."
   },
   {
-    question: "Jeg lader dig se ud, men holder vind og regn ude. Hvad er jeg?",
-    answer: "Et vindue.",
-    answerText: "Et vindue giver udsyn, samtidig med at rummet er lukket af."
+    question: "En person er både foran og bagved den samme person i køen. Hvordan?",
+    answer: "De står i hver sin kø: for eksempel check-in-kø og vaccinationskø."
+  },
+  {
+    question: "En person har nummer 21, men bliver kaldt før nummer 20. Der er ingen fejl i køsystemet. Hvordan?",
+    answer: "Nummer 21 er personens alder, ikke kønummeret."
+  },
+  {
+    question: "En person har nummer 4, men skal gå til nummer 12. Ingen af numrene er forkerte. Hvad betyder de?",
+    answer: "Nummer 4 er kønummeret, og nummer 12 er vaccinationsstationen."
+  },
+  {
+    question: "Jeg kan være optaget uden at tale, ledig uden at stå tom og booket uden at være en bog.",
+    answer: "En tid i bookingsystemet."
+  },
+  {
+    question: "Jeg får mennesker til at rejse sig, men jeg rører dem aldrig.",
+    answer: "Kønummeret på skærmen."
+  },
+  {
+    question: "En person sidder præcis 15 minutter og ser alligevel to forskellige gåder. Hvordan?",
+    answer: "Gåden skifter lige, når personen sætter sig, og igen præcis 15 minutter senere."
+  },
+  {
+    question: "En ny gåde kommer hvert kvarter fra klokken 8.00 til og med klokken 12.00. Hvor mange gåder vises der?",
+    answer: "17 gåder."
+  },
+  {
+    question: "Hvis tre medarbejdere registrerer tre borgere på tre minutter, hvor mange medarbejdere skal der til for at registrere 100 borgere på 100 minutter i samme tempo?",
+    answer: "Tre medarbejdere."
+  },
+  {
+    question: "En person er nummer 27. Skærmen viser 24 nu og skifter til næste nummer hvert tredje minut. Hvor længe går der, før nummer 27 vises?",
+    answer: "Ni minutter."
+  },
+  {
+    question: "Jeg kan være grøn uden at være en plante, rød uden at være blod og gul uden at være solen. I et center bestemmer jeg ofte, hvad man skal gøre.",
+    answer: "Farvemarkering eller skiltning."
+  },
+  {
+    question: "En person siger \"ja\" uden at sige noget. Personalet forstår svaret. Hvordan?",
+    answer: "Personen nikker."
+  },
+  {
+    question: "Jeg kan være sat, uden at nogen har sat sig. Når jeg mangler, er sagen ikke færdig.",
+    answer: "Et flueben i systemet."
+  },
+  {
+    question: "Jeg kommer før besøget, bruges under besøget og er bagefter ikke længere vigtig. Jeg er ikke personen selv.",
+    answer: "Bookingbekræftelsen."
+  },
+  {
+    question: "Jeg kan stå på papir, på en telefon og i et system, men jeg kan ikke selv møde op.",
+    answer: "En aftale eller booking."
+  },
+  {
+    question: "Jeg er lavet for at få folk til at tænke i ventetiden, men mit bedste svar er først godt, når det ikke var det første svar, man tænkte på.",
+    answer: "En god gåde."
   }
-];
+].map((riddle, index) => ({
+  ...riddle,
+  id: `riddle-${index + 1}`
+}));
 
-function getCopenhagenDateParts(date = new Date()) {
-  const values = {};
-  const parts = new Intl.DateTimeFormat("da-DK", {
-    timeZone: DENMARK_TIME_ZONE,
-    day: "numeric",
-    hour: "numeric",
-    hourCycle: "h23",
-    month: "numeric",
-    year: "numeric"
-  }).formatToParts(date);
+const RIDDLES_BY_ID = new Map(RIDDLE_BANK.map((riddle) => [riddle.id, riddle]));
+let recentRiddleShows = [];
+let riddleQueue = [];
 
-  parts.forEach((part) => {
-    if (part.type !== "literal") {
-      values[part.type] = Number(part.value);
+function shuffleRiddles(riddles) {
+  const shuffled = [...riddles];
+
+  for (let index = shuffled.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(Math.random() * (index + 1));
+    [shuffled[index], shuffled[swapIndex]] = [shuffled[swapIndex], shuffled[index]];
+  }
+
+  return shuffled;
+}
+
+function readStoredRiddleState() {
+  try {
+    return JSON.parse(localStorage.getItem(RIDDLE_QUEUE_STORAGE_KEY) || "null");
+  } catch {
+    return null;
+  }
+}
+
+function normalizeRecentRiddleShows(recentShows = [], now = Date.now()) {
+  if (!Array.isArray(recentShows)) {
+    return [];
+  }
+
+  const latestShows = new Map();
+
+  recentShows.forEach((show) => {
+    if (!show || !RIDDLES_BY_ID.has(show.id) || !Number.isFinite(show.shownAt)) {
+      return;
+    }
+
+    if (now - show.shownAt >= RIDDLE_REPEAT_GUARD_MS) {
+      return;
+    }
+
+    const previousShow = latestShows.get(show.id);
+    if (!previousShow || show.shownAt > previousShow.shownAt) {
+      latestShows.set(show.id, { id: show.id, shownAt: show.shownAt });
     }
   });
 
-  return {
-    day: values.day,
-    hour: values.hour,
-    month: values.month,
-    year: values.year
-  };
+  return [...latestShows.values()].sort((firstShow, secondShow) => firstShow.shownAt - secondShow.shownAt);
 }
 
-function getCopenhagenDateKey(date = new Date()) {
-  const { day, month, year } = getCopenhagenDateParts(date);
-  return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+function pruneRecentRiddleShows(now = Date.now()) {
+  recentRiddleShows = normalizeRecentRiddleShows(recentRiddleShows, now);
 }
 
-function getRiddleRotationKey(date = new Date()) {
-  const { hour } = getCopenhagenDateParts(date);
-  const rotationHour = Math.floor(hour / RIDDLE_ROTATION_INTERVAL_HOURS) * RIDDLE_ROTATION_INTERVAL_HOURS;
-  return `${getCopenhagenDateKey(date)}-${String(rotationHour).padStart(2, "0")}`;
+function persistRiddleQueueState() {
+  try {
+    localStorage.setItem(
+      RIDDLE_QUEUE_STORAGE_KEY,
+      JSON.stringify({
+        queueIds: riddleQueue.map((riddle) => riddle.id),
+        recentShows: recentRiddleShows
+      })
+    );
+  } catch {
+    // If storage is unavailable, the in-memory queue still keeps the screen running.
+  }
 }
 
-function hashStringToSeed(value) {
-  let hash = 2166136261;
-
-  for (let index = 0; index < value.length; index += 1) {
-    hash ^= value.charCodeAt(index);
-    hash = Math.imul(hash, 16777619);
+function refillRiddleQueue(minCount = RIDDLE_QUEUE_LOOKAHEAD_COUNT, now = Date.now()) {
+  if (RIDDLE_BANK.length === 0) {
+    return;
   }
 
-  return hash >>> 0;
-}
+  pruneRecentRiddleShows(now);
 
-function createSeededRandom(seed) {
-  let state = seed >>> 0;
+  while (riddleQueue.length < minCount) {
+    const recentIds = new Set(recentRiddleShows.map((show) => show.id));
+    const queuedIds = new Set(riddleQueue.map((riddle) => riddle.id));
+    let candidates = RIDDLE_BANK.filter((riddle) => !recentIds.has(riddle.id) && !queuedIds.has(riddle.id));
 
-  return () => {
-    let value = (state += 0x6d2b79f5);
-    value = Math.imul(value ^ (value >>> 15), value | 1);
-    value ^= value + Math.imul(value ^ (value >>> 7), value | 61);
-    return ((value ^ (value >>> 14)) >>> 0) / 4294967296;
-  };
-}
+    if (candidates.length === 0) {
+      candidates = RIDDLE_BANK.filter((riddle) => !queuedIds.has(riddle.id));
+    }
 
-function shuffleRiddlesForRotation(rotationKey) {
-  const random = createSeededRandom(hashStringToSeed(rotationKey));
-  const riddles = [...RIDDLE_BANK];
+    if (candidates.length === 0) {
+      candidates = RIDDLE_BANK;
+    }
 
-  for (let index = riddles.length - 1; index > 0; index -= 1) {
-    const swapIndex = Math.floor(random() * (index + 1));
-    [riddles[index], riddles[swapIndex]] = [riddles[swapIndex], riddles[index]];
+    riddleQueue.push(...shuffleRiddles(candidates));
   }
-
-  return riddles;
 }
 
-function getRiddleAnswersForRotation(date = new Date()) {
-  const rotationKey = getRiddleRotationKey(date);
-  const rotationSet = shuffleRiddlesForRotation(rotationKey).slice(0, RIDDLES_PER_ROTATION);
+function restoreRiddleQueueState(now = Date.now()) {
+  const storedState = readStoredRiddleState();
+  recentRiddleShows = normalizeRecentRiddleShows(storedState?.recentShows, now);
 
-  return rotationSet.map((riddle, index) => ({
+  const recentIds = new Set(recentRiddleShows.map((show) => show.id));
+  const queuedIds = new Set();
+
+  riddleQueue = Array.isArray(storedState?.queueIds)
+    ? storedState.queueIds
+        .map((id) => RIDDLES_BY_ID.get(id))
+        .filter((riddle) => {
+          if (!riddle || recentIds.has(riddle.id) || queuedIds.has(riddle.id)) {
+            return false;
+          }
+
+          queuedIds.add(riddle.id);
+          return true;
+        })
+    : [];
+
+  refillRiddleQueue(RIDDLE_QUEUE_LOW_WATERMARK, now);
+  persistRiddleQueueState();
+}
+
+function rememberRiddleShown(riddle, now = Date.now()) {
+  pruneRecentRiddleShows(now);
+  recentRiddleShows = recentRiddleShows.filter((show) => show.id !== riddle.id);
+  recentRiddleShows.push({ id: riddle.id, shownAt: now });
+}
+
+function getQueuedRiddles() {
+  refillRiddleQueue(RIDDLE_QUEUE_LOOKAHEAD_COUNT);
+
+  return riddleQueue.slice(0, RIDDLE_QUEUE_LOOKAHEAD_COUNT).map((riddle, index) => ({
     ...riddle,
-    id: `${rotationKey}-riddle-${index + 1}`,
-    label: `Gåde ${index + 1}`,
+    label: `Gåde ${index + 1} i køen`
   }));
+}
+
+function getCampaignAnswerItems(riddle) {
+  return [{ ...riddle, label: "Denne gåde" }];
 }
 
 function createCarouselSlides(riddles) {
@@ -303,7 +380,7 @@ function createCarouselSlides(riddles) {
     {
       ...riddles[0],
       type: "riddle",
-      kicker: "Gåde 1 af 4",
+      kicker: "Gåde 1 i køen",
       title: riddles[0].question,
       text: "Tænk over den, mens du venter.",
       extra: "Svaret vises på sin egen svarskærm."
@@ -317,7 +394,7 @@ function createCarouselSlides(riddles) {
     {
       ...riddles[1],
       type: "riddle",
-      kicker: "Gåde 2 af 4",
+      kicker: "Gåde 2 i køen",
       title: riddles[1].question,
       text: "Kig på skærmen, men vent med svaret.",
       extra: "Svaret vises på sin egen svarskærm."
@@ -337,7 +414,7 @@ function createCarouselSlides(riddles) {
     {
       ...riddles[2],
       type: "riddle",
-      kicker: "Gåde 3 af 4",
+      kicker: "Gåde 3 i køen",
       title: riddles[2].question,
       text: "Svar først, når kampagneskærmen kommer.",
       extra: "Svaret vises på sin egen svarskærm."
@@ -357,7 +434,7 @@ function createCarouselSlides(riddles) {
     {
       ...riddles[3],
       type: "riddle",
-      kicker: "Gåde 4 af 4",
+      kicker: "Gåde 4 i køen",
       title: riddles[3].question,
       text: "Tænk over den, mens karussellen kører videre.",
       extra: "Svaret vises på sin egen svarskærm."
@@ -371,9 +448,8 @@ function createCarouselSlides(riddles) {
   ];
 }
 
-const initialRiddleDate = new Date();
-let activeRiddleRotationKey = getRiddleRotationKey(initialRiddleDate);
-let riddleAnswers = getRiddleAnswersForRotation(initialRiddleDate);
+restoreRiddleQueueState();
+let riddleAnswers = getQueuedRiddles();
 let carouselSlides = createCarouselSlides(riddleAnswers);
 
 const campaignSlides = [
@@ -470,7 +546,6 @@ let settingsLastInteraction = 0;
 let settingsClosedUntil = 0;
 let cursorTimer = null;
 let carouselIndex = 0;
-let nextRiddleAnswerIndex = 0;
 let nextCampaignAt = 0;
 
 function updateClock(now = new Date()) {
@@ -528,7 +603,7 @@ function updateCarouselDots() {
 }
 
 function getRiddleIndex(riddleId) {
-  return riddleAnswers.findIndex((answer) => answer.id === riddleId);
+  return riddleQueue.findIndex((riddle) => riddle.id === riddleId);
 }
 
 function getRiddleAnswerAt(riddleId) {
@@ -538,8 +613,7 @@ function getRiddleAnswerAt(riddleId) {
     return 0;
   }
 
-  const riddleOffset = (riddleIndex - nextRiddleAnswerIndex + riddleAnswers.length) % riddleAnswers.length;
-  return nextCampaignAt + riddleOffset * RIDDLE_ANSWER_INTERVAL_MS;
+  return nextCampaignAt + riddleIndex * CAMPAIGN_INTERVAL_MS;
 }
 
 function updateRiddleCountdown() {
@@ -580,21 +654,16 @@ function renderCarouselSlide({ animate = false } = {}) {
   updateRiddleCountdown();
 }
 
-function refreshRiddleRotation(now = new Date()) {
-  const nextRotationKey = getRiddleRotationKey(now);
+function refreshQueuedRiddleSlides({ resetIndex = false } = {}) {
+  riddleAnswers = getQueuedRiddles();
+  carouselSlides = createCarouselSlides(riddleAnswers);
 
-  if (nextRotationKey === activeRiddleRotationKey) {
-    return false;
+  if (resetIndex || carouselIndex >= carouselSlides.length) {
+    carouselIndex = 0;
   }
 
-  activeRiddleRotationKey = nextRotationKey;
-  riddleAnswers = getRiddleAnswersForRotation(now);
-  carouselSlides = createCarouselSlides(riddleAnswers);
-  carouselIndex = 0;
-  nextRiddleAnswerIndex = 0;
   createCarouselDots();
   renderCarouselSlide();
-  return true;
 }
 
 function renderCampaignAnswers(answers = [], currentAnswerId = "", showCurrentAnswer = true) {
@@ -658,9 +727,16 @@ function transitionCampaignSlide(slide) {
 }
 
 function getNextRiddle() {
-  const riddle = riddleAnswers[nextRiddleAnswerIndex];
-  nextRiddleAnswerIndex = (nextRiddleAnswerIndex + 1) % riddleAnswers.length;
-  return riddle;
+  refillRiddleQueue(RIDDLE_QUEUE_LOW_WATERMARK);
+
+  const riddle = riddleQueue.shift();
+  const shownRiddle = { ...riddle, label: "Gåde" };
+
+  rememberRiddleShown(riddle);
+  refillRiddleQueue(RIDDLE_QUEUE_LOW_WATERMARK);
+  persistRiddleQueueState();
+
+  return shownRiddle;
 }
 
 function createRiddleQuestionSlide(riddle) {
@@ -670,7 +746,7 @@ function createRiddleQuestionSlide(riddle) {
     titleHtml: riddle.question,
     body: "Læs gåden igennem, og tænk over svaret.",
     meta: "Svaret kommer om 10 sekunder.",
-    answers: riddleAnswers,
+    answers: getCampaignAnswerItems(riddle),
     currentAnswerId: riddle.id,
     showCurrentAnswer: false
   };
@@ -679,11 +755,11 @@ function createRiddleQuestionSlide(riddle) {
 function createRiddleAnswerSlide(riddle) {
   return {
     variant: "answers",
-    kicker: `Svar på ${riddle.label.toLowerCase()}`,
+    kicker: "Svar på gåden",
     titleHtml: riddle.answer,
-    body: riddle.answerText,
-    meta: "Næste svarskærm kommer om cirka 3 minutter.",
-    answers: riddleAnswers,
+    body: riddle.answerText || "Næste gåde står allerede klar i køen.",
+    meta: "Næste gåde kommer om cirka 3 minutter.",
+    answers: getCampaignAnswerItems(riddle),
     currentAnswerId: riddle.id,
     durationMs: CAMPAIGN_ANSWER_DURATION_MS
   };
@@ -704,6 +780,8 @@ function showCampaign() {
   const riddle = getNextRiddle();
   const questionSlide = createRiddleQuestionSlide(riddle);
 
+  queueNextCampaign(CAMPAIGN_INTERVAL_MS);
+  refreshQueuedRiddleSlides();
   renderCampaignSlide(questionSlide);
   setCampaignVisible(true);
   triggerCampaignContentEnter();
@@ -717,7 +795,6 @@ function showCampaign() {
     campaignHideTimer = setTimeout(() => setCampaignVisible(false), answerSlide.durationMs || CAMPAIGN_DURATION_MS);
   }, RIDDLE_QUESTION_DURATION_MS);
 
-  queueNextCampaign(CAMPAIGN_INTERVAL_MS);
 }
 
 function queueNextCampaign(delay) {
@@ -844,9 +921,6 @@ function stopRadioPlayback() {
 setInterval(() => {
   const now = new Date();
   updateClock(now);
-  if (refreshRiddleRotation(now)) {
-    scheduleCampaign();
-  }
   updateRiddleCountdown();
 }, 250);
 updateClock();
@@ -913,7 +987,6 @@ document.addEventListener("visibilitychange", () => {
   if (!document.hidden) {
     const now = new Date();
     updateClock(now);
-    refreshRiddleRotation(now);
     scheduleCampaign();
     showCursorTemporarily();
   }
