@@ -12,6 +12,10 @@ const CURSOR_IDLE_MS = 3200;
 const CURSOR_CLOSE_HIDE_MS = 2200;
 const OBSERVATION_OFFSET_MS = 15 * 60 * 1000;
 const CAROUSEL_INTERVAL_MS = 12 * 1000;
+const RADIO_RECONNECT_BASE_DELAY_MS = 2500;
+const RADIO_RECONNECT_MAX_DELAY_MS = 30 * 1000;
+const RADIO_WATCHDOG_INTERVAL_MS = 10 * 1000;
+const RADIO_STALL_TIMEOUT_MS = 45 * 1000;
 
 const RIDDLE_REPEAT_GUARD_MS = 60 * 60 * 1000;
 const RIDDLE_QUEUE_LOOKAHEAD_COUNT = 4;
@@ -545,6 +549,13 @@ let settingsTimer = null;
 let settingsLastInteraction = 0;
 let settingsClosedUntil = 0;
 let cursorTimer = null;
+let radioShouldPlay = false;
+let radioReconnectTimer = null;
+let radioReconnectAttempts = 0;
+let radioLastProgressAt = 0;
+let radioLastCurrentTime = 0;
+let radioPlayRequestId = 0;
+let radioIsStarting = false;
 let carouselIndex = 0;
 let nextCampaignAt = 0;
 
@@ -873,56 +884,178 @@ function hideSettingsPanel({ pauseBeforeReopen = false, hideCursorSoon = false }
 function setActiveStation(stationKey) {
   selectedStation = stationKey;
   localStorage.setItem("selectedStation", stationKey);
+  updateStationButtons();
+}
+
+function updateStationButtons() {
   stationButtons.forEach((button) => {
-    const isActive = button.dataset.station === stationKey && !audio.paused;
+    const isSelected = button.dataset.station === selectedStation;
+    const isActive = isSelected && radioShouldPlay;
     button.classList.toggle("is-active", isActive);
-    button.classList.toggle("was-selected", button.dataset.station === stationKey);
+    button.classList.toggle("was-selected", isSelected);
     button.setAttribute("aria-pressed", String(isActive));
   });
 }
 
-async function playStation(stationKey) {
+function clearRadioReconnectTimer() {
+  clearTimeout(radioReconnectTimer);
+  radioReconnectTimer = null;
+}
+
+function recordRadioProgress() {
+  radioLastProgressAt = Date.now();
+  radioLastCurrentTime = audio.currentTime || 0;
+}
+
+function loadRadioStationSource(station) {
+  audio.pause();
+  audio.removeAttribute("src");
+  audio.load();
+  audio.src = station.url;
+  audio.load();
+}
+
+function scheduleRadioReconnect(reason = "stream") {
+  if (!radioShouldPlay || radioIsStarting || radioReconnectTimer || !selectedStation) return;
+
+  const station = stations[selectedStation];
+  if (!station) return;
+
+  const delay = Math.min(
+    RADIO_RECONNECT_MAX_DELAY_MS,
+    RADIO_RECONNECT_BASE_DELAY_MS * 2 ** Math.min(radioReconnectAttempts, 4)
+  );
+  radioReconnectAttempts += 1;
+  radioStatus.textContent = `${station.name} mistede forbindelsen. Genstarter...`;
+  updateStationButtons();
+
+  radioReconnectTimer = setTimeout(() => {
+    radioReconnectTimer = null;
+    playStation(selectedStation, { reconnect: true, reason });
+  }, delay);
+}
+
+function handleRadioPlaybackIssue(event) {
+  if (!radioShouldPlay || radioIsStarting) return;
+  scheduleRadioReconnect(event.type);
+}
+
+async function playStation(stationKey, { reconnect = false } = {}) {
   const station = stations[stationKey];
   if (!station) return;
 
-  if (!audio.paused && selectedStation === stationKey) {
+  if (!reconnect && !audio.paused && selectedStation === stationKey) {
     stopRadioPlayback();
     return;
   }
 
-  audio.src = station.url;
-  radioStatus.textContent = `Starter ${station.name}...`;
+  const requestId = (radioPlayRequestId += 1);
+  radioShouldPlay = true;
+  radioIsStarting = true;
+  clearRadioReconnectTimer();
+  loadRadioStationSource(station);
+  recordRadioProgress();
+  radioStatus.textContent = reconnect ? `Genstarter ${station.name}...` : `Starter ${station.name}...`;
   setActiveStation(stationKey);
 
   try {
     await audio.play();
+    if (requestId !== radioPlayRequestId || !radioShouldPlay || selectedStation !== stationKey) return;
+
+    radioReconnectAttempts = 0;
+    recordRadioProgress();
     radioStatus.textContent = `${station.name} spiller`;
     setActiveStation(stationKey);
-  } catch {
-    radioStatus.textContent = `${station.name} kunne ikke starte. Prøv igen.`;
-    stationButtons.forEach((button) => {
-      button.classList.remove("is-active");
-      button.setAttribute("aria-pressed", "false");
-    });
+  } catch (error) {
+    if (requestId !== radioPlayRequestId || !radioShouldPlay || selectedStation !== stationKey) return;
+    radioIsStarting = false;
+
+    if (error.name === "NotAllowedError") {
+      radioShouldPlay = false;
+      radioStatus.textContent = `${station.name} kunne ikke starte. Prøv igen.`;
+      updateStationButtons();
+      return;
+    }
+
+    radioStatus.textContent = `${station.name} kunne ikke starte. Prøver igen...`;
+    scheduleRadioReconnect("play-error");
+  } finally {
+    if (requestId === radioPlayRequestId) {
+      radioIsStarting = false;
+    }
   }
 }
 
 function stopRadioPlayback() {
+  radioShouldPlay = false;
+  radioIsStarting = false;
+  radioPlayRequestId += 1;
+  clearRadioReconnectTimer();
   audio.pause();
   audio.removeAttribute("src");
   audio.load();
   radioStatus.textContent = "Radio er slukket";
-  stationButtons.forEach((button) => {
-    button.classList.remove("is-active");
-    button.setAttribute("aria-pressed", "false");
-  });
+  updateStationButtons();
 }
+
+audio.addEventListener("playing", () => {
+  if (!radioShouldPlay || !selectedStation) return;
+
+  const station = stations[selectedStation];
+  if (!station) return;
+
+  clearRadioReconnectTimer();
+  radioReconnectAttempts = 0;
+  recordRadioProgress();
+  radioStatus.textContent = `${station.name} spiller`;
+  updateStationButtons();
+});
+
+audio.addEventListener("timeupdate", () => {
+  if (radioShouldPlay) {
+    recordRadioProgress();
+  }
+});
+
+audio.addEventListener("waiting", () => {
+  if (!radioShouldPlay || radioIsStarting || !selectedStation) return;
+
+  const station = stations[selectedStation];
+  if (!station) return;
+
+  radioStatus.textContent = `${station.name} genindlæser signalet...`;
+  scheduleRadioReconnect("waiting");
+});
+
+["abort", "ended", "error", "pause", "stalled"].forEach((eventName) => {
+  audio.addEventListener(eventName, handleRadioPlaybackIssue);
+});
 
 setInterval(() => {
   const now = new Date();
   updateClock(now);
   updateRiddleCountdown();
 }, 250);
+
+setInterval(() => {
+  if (!radioShouldPlay || radioIsStarting || !selectedStation) return;
+
+  if (audio.paused || audio.ended || audio.error) {
+    scheduleRadioReconnect("watchdog");
+    return;
+  }
+
+  const currentTime = audio.currentTime || 0;
+  if (Math.abs(currentTime - radioLastCurrentTime) > 0.25) {
+    recordRadioProgress();
+    return;
+  }
+
+  if (Date.now() - radioLastProgressAt > RADIO_STALL_TIMEOUT_MS) {
+    scheduleRadioReconnect("watchdog-stalled");
+  }
+}, RADIO_WATCHDOG_INTERVAL_MS);
+
 updateClock();
 createCarouselDots();
 renderCarouselSlide();
